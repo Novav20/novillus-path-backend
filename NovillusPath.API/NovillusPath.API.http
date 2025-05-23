@@ -1,0 +1,6 @@
+@NovillusPath.API_HostAddress = http://localhost:5037
+
+GET {{NovillusPath.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
