@@ -1,9 +1,11 @@
 using NovillusPath.Infrastructure.Extensions;
+using NovillusPath.Application.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSwaggerGen();
 builder.Services.AddInfrastructureServices(builder.Configuration);
+builder.Services.AddApplicationServices();
 
 builder.Services.AddControllers();
 

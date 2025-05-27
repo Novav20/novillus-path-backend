@@ -1,4 +1,3 @@
-using System;
 using NovillusPath.Domain.Entities;
 
 namespace NovillusPath.Application.Interfaces.Persistence;
