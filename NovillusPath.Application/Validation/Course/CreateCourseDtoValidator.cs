@@ -35,5 +35,10 @@ public class CreateCourseDtoValidator : AbstractValidator<CreateCourseDto>
         RuleFor(c => c.StartDate)
             .GreaterThanOrEqualTo(DateTime.UtcNow).WithMessage("{PropertyName} must be in the future.")
             .When(c => c.StartDate.HasValue);
+
+        RuleForEach(dto => dto.CategoryIds)
+            .NotEmpty().WithMessage("Category ID in the list cannot be empty.")
+            .NotEqual(Guid.Empty).WithMessage("Category ID in the list must not be an empty GUID.")
+            .When(dto => dto.CategoryIds != null && dto.CategoryIds.Count != 0);
     }
 }

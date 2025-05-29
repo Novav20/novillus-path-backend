@@ -16,7 +16,7 @@ public static class InfrastructureServiceRegistration
         services.AddDbContext<NovillusDbContext>(options => options.UseSqlServer(connectionString));
         services.AddScoped<ICourseRepository, CourseRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
-        // services.AddScoped<ICategoryRepository, CategoryRepository>();
+        services.AddScoped<ICategoryRepository, CategoryRepository>();
 
 
 

@@ -8,13 +8,13 @@ public class UnitOfWork(NovillusDbContext context) : IUnitOfWork
     private readonly NovillusDbContext _context = context;
     // Lazy load repositories
     private ICourseRepository? _courseRepository;
-    // private ICategoryRepository? _categoryRepository;
+    private ICategoryRepository? _categoryRepository;
 
     public ICourseRepository CourseRepository =>
         _courseRepository ??= new CourseRepository(_context);
 
-    // public ICategoryRepository CategoryRepository =>
-    //     _categoryRepository ??= new CategoryRepository(_context); // Assuming CategoryRepository exists
+    public ICategoryRepository CategoryRepository =>
+        _categoryRepository ??= new CategoryRepository(_context);
 
     public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {

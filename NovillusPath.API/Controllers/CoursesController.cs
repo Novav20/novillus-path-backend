@@ -43,11 +43,28 @@ public class CoursesController(IUnitOfWork unitOfWork, IMapper mapper) : Control
         // For now, createCourseDto.InstructorId is used. We might also validate if this InstructorId exists.
 
         var courseToCreate = _mapper.Map<Course>(createCourseDto);
+
+        if (createCourseDto.CategoryIds != null && createCourseDto.CategoryIds.Count > 0)
+        {
+            var categories = await _unitOfWork.CategoryRepository
+                .ListAsync(c => createCourseDto.CategoryIds.Contains(c.Id), cancellationToken);
+
+            if (categories.Count != createCourseDto.CategoryIds.Distinct().Count())
+            {
+                var foundIds = categories.Select(c => c.Id).ToList();
+                var missingIds = createCourseDto.CategoryIds.Except(foundIds).ToList();
+                return BadRequest($"Categories with IDs {string.Join(", ", missingIds)} not found.");
+            }
+
+            courseToCreate.Categories = [.. categories];
+
+        }
+
         await _unitOfWork.CourseRepository.AddAsync(courseToCreate, cancellationToken);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        var courseDto = _mapper.Map<CourseDto>(courseToCreate);
+        var courseDto = _mapper.Map<CourseDto>(courseToCreate); // TODO: We'll update this DTO mapping later
 
         return CreatedAtAction(nameof(GetCourseById), new { id = courseDto.Id }, courseDto);
     }
@@ -62,6 +79,28 @@ public class CoursesController(IUnitOfWork unitOfWork, IMapper mapper) : Control
         if (course == null) return NotFound($"Course with ID {id} not found.");
         // TODO: Authorization check (Week 2) - e.g., is current user the instructor?
         _mapper.Map(updateCourseDto, course);
+
+        if (updateCourseDto.CategoryIds != null)
+        {
+            if (updateCourseDto.CategoryIds.Count == 0)
+            {
+                course.Categories.Clear();
+            }
+            else
+            {
+                var categoriesFromDto = await _unitOfWork.CategoryRepository
+                    .ListAsync(c => updateCourseDto.CategoryIds.Contains(c.Id), cancellationToken);
+
+                if (categoriesFromDto.Count != updateCourseDto.CategoryIds.Distinct().Count())
+                {
+                    var foundIds = categoriesFromDto.Select(c => c.Id).ToList();
+                    var missingIds = updateCourseDto.CategoryIds.Except(foundIds).ToList();
+                    return BadRequest($"Categories with IDs {string.Join(", ", missingIds)} not found.");
+                }
+                course.Categories.Clear();
+                course.Categories = [.. categoriesFromDto];
+            }
+        }
         course.UpdatedAt = DateTime.UtcNow;
         await _unitOfWork.SaveChangesAsync(cancellationToken);
         return NoContent();

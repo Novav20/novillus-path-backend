@@ -13,4 +13,6 @@ public class UpdateCourseDto
     [Url]
     public string? ImageUrl { get; set; }
     public DateTime? StartDate { get; set; }
+    public List<Guid>? CategoryIds { get; set; }
+
 }

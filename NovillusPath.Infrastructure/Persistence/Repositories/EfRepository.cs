@@ -23,7 +23,7 @@ public class EfRepository<T>(NovillusDbContext context) : IRepository<T> where T
         return await _context.Set<T>().FindAsync([id], cancellationToken);
     }
 
-    public async Task<IReadOnlyList<T>> ListAllAsync(CancellationToken cancellationToken = default)
+    public virtual async Task<IReadOnlyList<T>> ListAllAsync(CancellationToken cancellationToken = default)
     {
         return await _context.Set<T>().ToListAsync(cancellationToken);
     }

@@ -15,4 +15,5 @@ public class Course
     public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     public Guid InstructorId { get; init; } 
+    public ICollection<Category> Categories { get; set; } = [];
 }
