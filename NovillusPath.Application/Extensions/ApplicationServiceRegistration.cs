@@ -1,5 +1,6 @@
 using System.Reflection;
 using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace NovillusPath.Application.Extensions;
@@ -10,7 +11,8 @@ public static class ApplicationServiceRegistration
     {
         services.AddAutoMapper(Assembly.GetExecutingAssembly());
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-        
+        services.AddFluentValidationAutoValidation();
+
         return services;
     }
 }
