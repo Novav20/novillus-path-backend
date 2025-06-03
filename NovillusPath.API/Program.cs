@@ -41,7 +41,9 @@ else
     app.UseHttpsRedirection();
 }
 app.UseCors(MyAllowSpecificOrigins);
-// app.UseAuthorization();
-// app.UseAuthentication();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapControllers();
 app.Run();

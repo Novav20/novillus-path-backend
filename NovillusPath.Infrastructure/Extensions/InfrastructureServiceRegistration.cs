@@ -20,6 +20,7 @@ public static class InfrastructureServiceRegistration
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<ICategoryRepository, CategoryRepository>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<ITokenGeneratorService, TokenGeneratorService>();
 
 
         return services;
