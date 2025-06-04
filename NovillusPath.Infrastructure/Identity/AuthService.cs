@@ -26,12 +26,10 @@ public class AuthService(UserManager<ApplicationUser> userManager, SignInManager
         {
             return LoginResult.Failure(["Invalid email or password."]);
         }
-        string token = await _tokenGenerator.GenerateTokenAsync(user); 
+        string token = await _tokenGenerator.GenerateTokenAsync(user);
         return LoginResult.Success(token);
     }
 
-    // We'll inject IMapper later if needed for mapping DTO to ApplicationUser if not done before calling service
-    // Or RoleManager if dealing with roles here
     public async Task<AuthResult> RegisterUserAsync(RegisterUserDto registerUserDto, CancellationToken cancellationToken = default)
     {
         var existingUser = await _userManager.FindByEmailAsync(registerUserDto.Email);
@@ -46,16 +44,22 @@ public class AuthService(UserManager<ApplicationUser> userManager, SignInManager
             Email = registerUserDto.Email,
             UserName = registerUserDto.Email,
             FullName = registerUserDto.FullName,
+            EmailConfirmed = true
         };
 
-        var result = await _userManager.CreateAsync(newUser, registerUserDto.Password);
+        var createUserResult = await _userManager.CreateAsync(newUser, registerUserDto.Password);
 
-        if (!result.Succeeded)
+        if (!createUserResult.Succeeded)
         {
-            return AuthResult.Failure(result.Errors.Select(e => e.Description));
+            return AuthResult.Failure(createUserResult.Errors.Select(e => e.Description));
         }
-        // TODO (Week 2, Day 4): Assign a default role (e.g., "Student") to the new user
-        // await _userManager.AddToRoleAsync(newUser, "Student");
+        const string defaultRole = "Student";
+        var addToRoleResult = await _userManager.AddToRoleAsync(newUser, defaultRole);
+        if (!addToRoleResult.Succeeded)
+        {
+            await _userManager.DeleteAsync(newUser); // Attempt to roll back user creation
+            return AuthResult.Failure(addToRoleResult.Errors.Select(e => e.Description).Concat(["User registration failed due to role assignment issue."]));
+        }
         return AuthResult.Success();
     }
 }

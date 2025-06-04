@@ -1,6 +1,7 @@
 using NovillusPath.Infrastructure.Extensions;
 using NovillusPath.Application.Extensions;
 using NovillusPath.API.Extensions;
+using NovillusPath.Infrastructure.Persistence.Seed;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +30,22 @@ builder.Services.AddSwaggerGen();
 
 
 var app = builder.Build();
+
+
+using (var scope = app.Services.CreateScope())
+{
+    var serviceProvider = scope.ServiceProvider;
+    var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
+    try
+    {
+        await IdentityDataSeeder.SeedDataAsync(serviceProvider);
+        logger.LogInformation("Identity data seeded successfully.");
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "An error occurred while seeding identity data.");
+    }
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
