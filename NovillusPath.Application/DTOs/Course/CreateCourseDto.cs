@@ -6,7 +6,6 @@ public class CreateCourseDto
 {
     public required string Title { get; set; }
     public decimal Price { get; set; }
-    public Guid InstructorId { get; init; } // TODO: we'll get this from the authenticated user.
     public string? Description { get; set; }
     public int? DurationInWeeks { get; set; }
     [Url]

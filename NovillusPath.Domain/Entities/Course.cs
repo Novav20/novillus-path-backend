@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using NovillusPath.Domain.Enums;
 
 namespace NovillusPath.Domain.Entities;
@@ -14,6 +15,8 @@ public class Course
     public DateTime? StartDate { get; set; }
     public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
-    public Guid InstructorId { get; init; } 
+    [ForeignKey(nameof(Instructor))]
+    public Guid InstructorId { get; set; }
+    public ApplicationUser? Instructor { get; set; } 
     public ICollection<Category> Categories { get; set; } = [];
 }

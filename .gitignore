@@ -13,6 +13,7 @@
 *.userosscache
 *.sln.docstates
 NovillusPath.Infrastructure/Migrations/
+*.sql
 
 
 # User-specific files (MonoDevelop/Xamarin Studio)

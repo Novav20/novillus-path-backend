@@ -22,6 +22,7 @@ builder.Services.AddCors(options =>
 
 
 builder.Services.AddApplicationServices();
+builder.Services.AddApiServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddIdentityServices(builder.Configuration);
 

@@ -1,6 +1,8 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NovillusPath.Application.DTOs.Course;
+using NovillusPath.Application.Interfaces.Common;
 using NovillusPath.Application.Interfaces.Persistence;
 using NovillusPath.Domain.Entities;
 
@@ -8,10 +10,11 @@ namespace NovillusPath.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class CoursesController(IUnitOfWork unitOfWork, IMapper mapper) : ControllerBase
+public class CoursesController(IUnitOfWork unitOfWork, IMapper mapper, ICurrentUserService currentUserService) : ControllerBase
 {
     private readonly IMapper _mapper = mapper;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly ICurrentUserService _currentUserService = currentUserService;
 
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -35,14 +38,16 @@ public class CoursesController(IUnitOfWork unitOfWork, IMapper mapper) : Control
     }
 
     [HttpPost]
+    [Authorize(Roles = "Instructor,Admin")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<CourseDto>> CreateCourse([FromBody] CreateCourseDto createCourseDto, CancellationToken cancellationToken)
     {
-        // TODO: In Week 2, when we have auth, we'll get InstructorId from the logged-in user.
-        // For now, createCourseDto.InstructorId is used. We might also validate if this InstructorId exists.
+        var instructorId = _currentUserService.UserId;
+        if (!instructorId.HasValue) return Unauthorized("Instructor ID could not be determined from token.");
 
         var courseToCreate = _mapper.Map<Course>(createCourseDto);
+        courseToCreate.InstructorId = instructorId.Value;
 
         if (createCourseDto.CategoryIds != null && createCourseDto.CategoryIds.Count > 0)
         {
@@ -70,14 +75,25 @@ public class CoursesController(IUnitOfWork unitOfWork, IMapper mapper) : Control
     }
 
     [HttpPut("{id:guid}")]
+    [Authorize(Roles = "Instructor,Admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+
     public async Task<ActionResult> UpdateCourse(Guid id, [FromBody] UpdateCourseDto updateCourseDto, CancellationToken cancellationToken)
     {
         var course = await _unitOfWork.CourseRepository.GetByIdAsync(id, cancellationToken);
         if (course == null) return NotFound($"Course with ID {id} not found.");
-        // TODO: Authorization check (Week 2) - e.g., is current user the instructor?
+
+        var currentUserId = _currentUserService.UserId;
+        bool isAdmin = _currentUserService.IsInRole("Admin");
+
+        if (!isAdmin && course.InstructorId != currentUserId)
+        {
+            return Forbid("You are not authorized to update this course.");
+        }
+
         _mapper.Map(updateCourseDto, course);
 
         if (updateCourseDto.CategoryIds != null)
@@ -107,13 +123,22 @@ public class CoursesController(IUnitOfWork unitOfWork, IMapper mapper) : Control
     }
 
     [HttpDelete("{id:guid}")]
+    [Authorize(Roles = "Instructor,Admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult> DeleteCourse(Guid id, CancellationToken cancellationToken)
     {
         var course = await _unitOfWork.CourseRepository.GetByIdAsync(id, cancellationToken);
         if (course == null) return NotFound($"Course with ID {id} not found.");
-        // TODO: Authorization check (Week 2) - e.g., just owner or admin can delete course
+
+        var currentUserId = _currentUserService.UserId;
+        bool isAdmin = _currentUserService.IsInRole("Admin");
+
+        if (!isAdmin && course.InstructorId != currentUserId)
+        {
+            return Forbid("You are not authorized to delete this course.");
+        }
         await _unitOfWork.CourseRepository.DeleteAsync(course, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
         return NoContent();

@@ -1,4 +1,3 @@
-using System;
 using Microsoft.AspNetCore.Identity;
 using NovillusPath.Application.DTOs.User;
 using NovillusPath.Application.Interfaces.Identity;

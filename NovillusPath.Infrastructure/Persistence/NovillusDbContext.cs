@@ -22,6 +22,12 @@ public class NovillusDbContext(DbContextOptions<NovillusDbContext> options)
 
             entity.HasMany(c => c.Categories)
                 .WithMany(cat => cat.Courses);
+
+            entity.HasOne(c => c.Instructor)
+                .WithMany(u => u.CreatedCourses)
+                .HasForeignKey(c => c.InstructorId)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         modelBuilder.Entity<Category>(entity =>

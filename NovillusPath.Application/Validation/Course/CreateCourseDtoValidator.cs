@@ -14,10 +14,6 @@ public class CreateCourseDtoValidator : AbstractValidator<CreateCourseDto>
         RuleFor(c => c.Price)
             .GreaterThanOrEqualTo(0).WithMessage("{PropertyName} must be greater than or equal to 0.");
 
-        RuleFor(c => c.InstructorId)
-            .NotEmpty().WithMessage("{PropertyName} is required.")
-            .NotEqual(Guid.Empty).WithMessage("{PropertyName} must not be empty.");
-
         RuleFor(c => c.Description)
             .MaximumLength(1000).WithMessage("{PropertyName} must not exceed 1000 characters.")
             .When(c => !string.IsNullOrEmpty(c.Description));
