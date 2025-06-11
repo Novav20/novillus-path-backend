@@ -33,9 +33,21 @@ public class EfRepository<T>(NovillusDbContext context) : IRepository<T> where T
         return await _context.Set<T>().Where(predicate).ToListAsync(cancellationToken);
     }
 
+    public async Task<IReadOnlyList<T>> ListAsync<TKey>(Expression<Func<T, bool>> predicate, Expression<Func<T, TKey>> orderBy, bool ascending = true, CancellationToken cancellationToken = default)
+    {
+        var query = _context.Set<T>().Where(predicate);
+        query = ascending ? query.OrderBy(orderBy) : query.OrderByDescending(orderBy);
+        return await query.ToListAsync(cancellationToken);
+    }
+
     public Task UpdateAsync(T entity, CancellationToken cancellationToken = default)
     {
         _context.Set<T>().Update(entity);
         return Task.CompletedTask;
+    }
+
+    public async Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default)
+    {
+        return await _context.Set<T>().AnyAsync(predicate, cancellationToken);
     }
 }

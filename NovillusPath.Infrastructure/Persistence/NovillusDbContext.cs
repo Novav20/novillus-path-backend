@@ -5,10 +5,11 @@ using NovillusPath.Domain.Entities;
 
 namespace NovillusPath.Infrastructure.Persistence;
 
-public class NovillusDbContext(DbContextOptions<NovillusDbContext> options) 
-    : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>(options) 
+public class NovillusDbContext(DbContextOptions<NovillusDbContext> options)
+    : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>(options)
 {
     public DbSet<Course> Courses { get; set; }
+    public DbSet<Section> Sections { get; set; }
     public DbSet<Category> Categories { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -47,5 +48,21 @@ public class NovillusDbContext(DbContextOptions<NovillusDbContext> options)
         modelBuilder.Entity<IdentityUserLogin<Guid>>(b => { b.ToTable("AppUserLogins"); }); // External logins (Google, FB, etc.)
         modelBuilder.Entity<IdentityRoleClaim<Guid>>(b => { b.ToTable("AppRoleClaims"); }); // Role claims
         modelBuilder.Entity<IdentityUserToken<Guid>>(b => { b.ToTable("AppUserTokens"); }); // Refresh tokens, 2FA tokens, etc.
+
+        modelBuilder.Entity<Section>(entity =>
+        {
+            entity.Property(s => s.Title)
+                .IsRequired()
+                .HasMaxLength(150);
+
+            entity.Property(s => s.Order)
+                .IsRequired();
+
+            entity.HasOne(s => s.Course)
+                .WithMany(c => c.Sections)
+                .HasForeignKey(s => s.CourseId)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
+        });
     }
 }

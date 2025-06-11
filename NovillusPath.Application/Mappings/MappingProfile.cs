@@ -1,6 +1,7 @@
 using AutoMapper;
 using NovillusPath.Application.DTOs.Category;
 using NovillusPath.Application.DTOs.Course;
+using NovillusPath.Application.DTOs.Section;
 using NovillusPath.Domain.Entities;
 
 namespace NovillusPath.Application.Mappings;
@@ -20,6 +21,11 @@ public class MappingProfile : Profile
         CreateMap<Category, CategoryDto>();
         CreateMap<CreateCategoryDto, Category>();
         CreateMap<UpdateCategoryDto, Category>()
+            .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
+
+        CreateMap<Section, SectionDto>();
+        CreateMap<CreateSectionDto,Section>();
+        CreateMap<UpdateSectionDto, Section>()
             .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
     }
 }

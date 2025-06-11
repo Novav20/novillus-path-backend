@@ -384,7 +384,10 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 
-# VS Code files for those working on multiple tools
+# Frontend Angular
+/NovillusPath.UI/ 
+
+# .NET Core build files for those working on multiple tools
 .vscode/
 *.code-workspace
 

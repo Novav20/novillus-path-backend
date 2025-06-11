@@ -17,6 +17,7 @@ public class Course
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     [ForeignKey(nameof(Instructor))]
     public Guid InstructorId { get; set; }
-    public ApplicationUser? Instructor { get; set; } 
+    public ApplicationUser? Instructor { get; set; }
     public ICollection<Category> Categories { get; set; } = [];
+    public ICollection<Section> Sections { get; set; } = [];
 }

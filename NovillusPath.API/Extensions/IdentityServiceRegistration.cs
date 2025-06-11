@@ -32,7 +32,7 @@ public static class IdentityServiceRegistration
         .AddJwtBearer(options =>
         {
             options.SaveToken = true;
-            options.RequireHttpsMetadata = false; // For dev; in production, set to true if using HTTPS
+            options.RequireHttpsMetadata = false; // TODO: For dev; in production, set to true if using HTTPS
             
             options.TokenValidationParameters = new()
             {

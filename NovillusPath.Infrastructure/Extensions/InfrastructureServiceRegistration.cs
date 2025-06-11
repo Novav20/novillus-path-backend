@@ -36,11 +36,11 @@ public static class InfrastructureServiceRegistration
 
         services.AddDbContext<NovillusDbContext>(options => options.UseSqlServer(connectionString));
         services.AddScoped<ICourseRepository, CourseRepository>();
-        services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<ICategoryRepository, CategoryRepository>();
+        services.AddScoped<ISectionRepository, SectionRepository>();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<ITokenGeneratorService, TokenGeneratorService>();
-
 
         return services;
     }
