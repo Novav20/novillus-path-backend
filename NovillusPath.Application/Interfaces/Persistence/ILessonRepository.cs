@@ -1,0 +1,9 @@
+using NovillusPath.Domain.Entities;
+
+namespace NovillusPath.Application.Interfaces.Persistence;
+
+public interface ILessonRepository : IRepository<Lesson>
+{
+    Task<Lesson?> GetLessonWithContentBlocksAsync(Guid lessonId, CancellationToken cancellationToken);
+    Task<IReadOnlyList<Lesson>> GetLessonsBySectionIdAsync(Guid sectionId, bool includeContentBlocks, CancellationToken cancellationToken);
+}

@@ -14,5 +14,5 @@ public class Section
 
     public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
-    // public ICollection<Lesson> Lessons { get; set; } = [];
+    public ICollection<Lesson> Lessons { get; set; } = [];
 }

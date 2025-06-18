@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using NovillusPath.Domain.Entities;
+using NovillusPath.Domain.Entities.Content;
+using NovillusPath.Domain.Enums;
 
 namespace NovillusPath.Infrastructure.Persistence;
 
@@ -11,6 +13,10 @@ public class NovillusDbContext(DbContextOptions<NovillusDbContext> options)
     public DbSet<Course> Courses { get; set; }
     public DbSet<Section> Sections { get; set; }
     public DbSet<Category> Categories { get; set; }
+    public DbSet<Lesson> Lessons { get; set; }
+    public DbSet<ContentBlock> ContentBlocks { get; set; }
+    // public DbSet<Review> Reviews { get; set; }
+    // public DbSet<Enrollment> Enrollments { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -61,6 +67,36 @@ public class NovillusDbContext(DbContextOptions<NovillusDbContext> options)
             entity.HasOne(s => s.Course)
                 .WithMany(c => c.Sections)
                 .HasForeignKey(s => s.CourseId)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Lesson>(entity =>
+        {
+            entity.Property(l => l.Title)
+                .IsRequired()
+                .HasMaxLength(150);
+
+            entity.HasOne(l => l.Section)
+                .WithMany(s => s.Lessons)
+                .HasForeignKey(l => l.SectionId)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+
+        modelBuilder.Entity<ContentBlock>(entity =>
+        {
+            entity.HasDiscriminator<string>("ContentType")
+                .HasValue<TextContent>(nameof(ContentBlockType.Text))
+                .HasValue<VideoContent>(nameof(ContentBlockType.Video));
+
+            entity.Property(cb => cb.Order)
+                .IsRequired();
+
+            entity.HasOne(cb => cb.Lesson)
+                .WithMany(l => l.ContentBlocks)
+                .HasForeignKey(cb => cb.LessonId)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
         });

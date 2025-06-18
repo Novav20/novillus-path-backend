@@ -4,23 +4,9 @@ using NovillusPath.Application.Interfaces.Common;
 using NovillusPath.Application.Interfaces.Persistence;
 using NovillusPath.Application.Interfaces.Services;
 using NovillusPath.Domain.Entities;
+using NovillusPath.Application.Exceptions; // Add this using statement
 
 namespace NovillusPath.Application.Services;
-
-// Define a custom exception for authorization errors within the service
-public class ServiceAuthorizationException(string message) : Exception(message)
-{
-}
-
-// Define a custom exception for not found errors within the service
-public class ServiceNotFoundException(string message) : Exception(message)
-{
-}
-
-// Define a custom exception for bad request errors within the service
-public class ServiceBadRequestException(string message) : Exception(message)
-{
-}
 
 
 public class SectionService(IUnitOfWork unitOfWork, IMapper mapper, ICurrentUserService currentUserService) : ISectionService

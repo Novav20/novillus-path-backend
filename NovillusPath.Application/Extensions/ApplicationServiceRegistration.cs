@@ -15,6 +15,7 @@ public static class ApplicationServiceRegistration
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
         services.AddFluentValidationAutoValidation();
         services.AddScoped<ISectionService, SectionService>();
+        services.AddScoped<ILessonService, LessonService>();
 
         return services;
     }
