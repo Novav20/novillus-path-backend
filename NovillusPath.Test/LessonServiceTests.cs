@@ -68,7 +68,7 @@ public class LessonServiceTests
         _mapperMock.Setup(m => m.Map<Lesson>(It.IsAny<CreateLessonDto>())).Returns(new Lesson { Title = createLessonDto.Title, ContentBlocks = [] });
         _mapperMock.Setup(m => m.Map<TextContent>(It.IsAny<CreateContentBlockBaseDto>())).Returns((CreateContentBlockBaseDto dto) => new TextContent { Text = ((CreateTextContentDto)dto).Text });
         _mapperMock.Setup(m => m.Map<VideoContent>(It.IsAny<CreateContentBlockBaseDto>())).Returns((CreateContentBlockBaseDto dto) => new VideoContent { VideoUrl = ((CreateVideoContentDto)dto).VideoUrl, DurationMinutes = ((CreateVideoContentDto)dto).DurationMinutes });
-        _mapperMock.Setup(m => m.Map<LessonDto>(It.IsAny<Lesson>())).Returns(new LessonDto { Title = createLessonDto.Title });
+        _mapperMock.Setup(m => m.Map<LessonDto>(It.IsAny<Lesson>())).Returns(new LessonDto { Title = createLessonDto.Title, Status = "Draft" });
 
         var service = new LessonService(_unitOfWorkMock.Object, _mapperMock.Object, _currentUserServiceMock.Object);
 

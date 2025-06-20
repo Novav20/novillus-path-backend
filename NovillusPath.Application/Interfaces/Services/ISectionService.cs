@@ -9,5 +9,6 @@ namespace NovillusPath.Application.Interfaces.Services
         Task<SectionDto> CreateSectionAsync(Guid courseId, CreateSectionDto createSectionDto, CancellationToken cancellationToken);
         Task UpdateSectionAsync(Guid courseId, Guid sectionId, UpdateSectionDto updateSectionDto, CancellationToken cancellationToken);
         Task DeleteSectionAsync(Guid courseId, Guid sectionId, CancellationToken cancellationToken);
+        Task UpdateSectionStatusAsync(Guid courseId, Guid sectionId, UpdateSectionStatusDto updateStatusDto, CancellationToken cancellationToken);
     }
 }

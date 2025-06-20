@@ -9,7 +9,8 @@ public class CourseMappingProfile : Profile
     public CourseMappingProfile()
     {
         CreateMap<Course, CourseDto>()
-            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()));
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
+            .ForMember(dest => dest.Sections, opt => opt.MapFrom(src => src.Sections != null ? src.Sections.OrderBy(s => s.Order).ToList() : null));
 
         CreateMap<CreateCourseDto, Course>();
 

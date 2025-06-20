@@ -10,7 +10,7 @@ namespace NovillusPath.API.Controllers
     [Route("api/courses/{courseId:guid}/sections/{sectionId:guid}/lessons")]
     [ApiController]
     [Produces(MediaTypeNames.Application.Json)]
-    public class LessonsController(ILessonService lessonService) : ControllerBase
+    public class LessonsController(ILessonService lessonService) : BaseApiController
     {
         private readonly ILessonService _lessonService = lessonService;
 
@@ -26,7 +26,7 @@ namespace NovillusPath.API.Controllers
             }
             catch (ServiceNotFoundException ex)
             {
-                return NotFound(new ProblemDetails { Title = "Not Found", Detail = ex.Message, Status = StatusCodes.Status404NotFound });
+                return NotFoundProblem(ex);
             }
         }
 
@@ -42,7 +42,7 @@ namespace NovillusPath.API.Controllers
             }
             catch (ServiceNotFoundException ex)
             {
-                return NotFound(new ProblemDetails { Title = "Not Found", Detail = ex.Message, Status = StatusCodes.Status404NotFound });
+                return NotFoundProblem(ex);
             }
         }
 
@@ -61,17 +61,15 @@ namespace NovillusPath.API.Controllers
             }
             catch (ServiceNotFoundException ex)
             {
-
-                return NotFound(new ProblemDetails { Title = "Not Found", Detail = ex.Message, Status = StatusCodes.Status404NotFound });
+                return NotFoundProblem(ex);
             }
             catch (ServiceAuthorizationException ex)
             {
-
-                return StatusCode(StatusCodes.Status403Forbidden, new ProblemDetails { Title = "Forbidden", Detail = ex.Message, Status = StatusCodes.Status403Forbidden });
+                return ForbiddenProblem(ex);
             }
             catch (ServiceBadRequestException ex)
             {
-                return BadRequest(new ProblemDetails { Title = "Bad Request", Detail = ex.Message, Status = StatusCodes.Status400BadRequest });
+                return BadRequestProblem(ex);
             }
         }
 
@@ -90,15 +88,42 @@ namespace NovillusPath.API.Controllers
             }
             catch (ServiceNotFoundException ex)
             {
-                return NotFound(new ProblemDetails { Title = "Not Found", Detail = ex.Message, Status = StatusCodes.Status404NotFound });
+                return NotFoundProblem(ex);
             }
             catch (ServiceAuthorizationException ex)
             {
-                return StatusCode(StatusCodes.Status403Forbidden, new ProblemDetails { Title = "Forbidden", Detail = ex.Message, Status = StatusCodes.Status403Forbidden });
+                return ForbiddenProblem(ex);
             }
             catch (ServiceBadRequestException ex)
             {
-                return BadRequest(new ProblemDetails { Title = "Bad Request", Detail = ex.Message, Status = StatusCodes.Status400BadRequest });
+                return BadRequestProblem(ex);
+            }
+        }
+
+        [HttpPatch("{lessonId:guid}/status")]
+        [Authorize(Roles = "Admin,Instructor")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UpdateLessonStatus([FromRoute] Guid courseId, [FromRoute] Guid sectionId, [FromRoute] Guid lessonId, [FromBody] UpdateLessonStatusDto updateLessonStatusDto, CancellationToken cancellationToken)
+        {
+            try
+            {
+                await _lessonService.UpdateLessonStatusAsync(sectionId, lessonId, updateLessonStatusDto, cancellationToken);
+                return NoContent();
+            }
+            catch (ServiceNotFoundException ex)
+            {
+                return NotFoundProblem(ex);
+            }
+            catch (ServiceAuthorizationException ex)
+            {
+                return ForbiddenProblem(ex);
+            }
+            catch (ServiceBadRequestException ex)
+            {
+                return BadRequestProblem(ex);
             }
         }
 
@@ -116,12 +141,14 @@ namespace NovillusPath.API.Controllers
             }
             catch (ServiceNotFoundException ex)
             {
-                return NotFound(new ProblemDetails { Title = "Not Found", Detail = ex.Message, Status = StatusCodes.Status404NotFound });
+                return NotFoundProblem(ex);
             }
             catch (ServiceAuthorizationException ex)
             {
-                return StatusCode(StatusCodes.Status403Forbidden, new ProblemDetails { Title = "Forbidden", Detail = ex.Message, Status = StatusCodes.Status403Forbidden });
+                return ForbiddenProblem(ex);
             }
         }
+
+
     }
 }

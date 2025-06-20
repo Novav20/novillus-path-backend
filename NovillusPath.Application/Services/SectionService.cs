@@ -4,7 +4,10 @@ using NovillusPath.Application.Interfaces.Common;
 using NovillusPath.Application.Interfaces.Persistence;
 using NovillusPath.Application.Interfaces.Services;
 using NovillusPath.Domain.Entities;
-using NovillusPath.Application.Exceptions; // Add this using statement
+using NovillusPath.Application.Exceptions;
+using NovillusPath.Domain.Enums;
+using System.Linq.Expressions; // Add this using statement
+using NovillusPath.Application.Helpers;
 
 namespace NovillusPath.Application.Services;
 
@@ -17,40 +20,58 @@ public class SectionService(IUnitOfWork unitOfWork, IMapper mapper, ICurrentUser
 
     public async Task<IReadOnlyList<SectionDto>> GetSectionsAsync(Guid courseId, CancellationToken cancellationToken)
     {
-        bool courseExists = await _unitOfWork.CourseRepository.ExistsAsync(c => c.Id == courseId, cancellationToken);
-        if (!courseExists)
+        var course = await _unitOfWork.CourseRepository.GetByIdAsync(courseId, cancellationToken)
+            ?? throw new ServiceNotFoundException($"Course with ID {courseId} not found.");
+        var currentUserId = _currentUserService.UserId;
+        bool isAdmin = _currentUserService.IsInRole("Admin");
+        bool isInstructor = course.InstructorId == currentUserId;
+        if (!VisibilityHelper.CanUserViewCourse(course, currentUserId, isAdmin, isInstructor))
         {
             throw new ServiceNotFoundException($"Course with ID {courseId} not found.");
         }
-
-        var sections = await _unitOfWork.SectionRepository.ListAsync(s => s.CourseId == courseId, s => s.Order, true, cancellationToken);
+        Expression<Func<Section, bool>> sectionFilter;
+        bool privileged = isAdmin || isInstructor;
+        sectionFilter = privileged ? (s => s.CourseId == courseId) : (s => s.CourseId == courseId && s.Status == SectionStatus.Published);
+        var sections = await _unitOfWork.SectionRepository.ListAsync(
+            sectionFilter,
+            s => s.Order,
+            true,
+            cancellationToken);
         return _mapper.Map<IReadOnlyList<SectionDto>>(sections);
     }
 
     public async Task<SectionDto> GetSectionByIdAsync(Guid courseId, Guid sectionId, CancellationToken cancellationToken)
     {
-        var section = await _unitOfWork.SectionRepository.GetByIdAsync(sectionId, cancellationToken);
-
+        var section = await _unitOfWork.SectionRepository.GetFullSectionByIdAsync(sectionId, cancellationToken);
         if (section == null || section.CourseId != courseId)
         {
             throw new ServiceNotFoundException($"Section with ID {sectionId} not found in course {courseId}.");
+        }
+        var currentUserId = _currentUserService.UserId;
+        bool isAdmin = _currentUserService.IsInRole("Admin");
+        bool isInstructor = section.Course.InstructorId == currentUserId;
+        if (!VisibilityHelper.CanUserViewSection(section, currentUserId, isAdmin, isInstructor))
+        {
+            throw new ServiceNotFoundException($"Section with ID {sectionId} not found in course {courseId}.");
+        }
+        bool isPublicOrStudentViewForLessons = !isAdmin && !isInstructor;
+        if (isPublicOrStudentViewForLessons)
+        {
+            section.Lessons = [.. section.Lessons.Where(l => l.Status == LessonStatus.Published)];
         }
         return _mapper.Map<SectionDto>(section);
     }
 
     public async Task<SectionDto> CreateSectionAsync(Guid courseId, CreateSectionDto createSectionDto, CancellationToken cancellationToken)
     {
-        var course = await _unitOfWork.CourseRepository.GetCourseWithDetailsAsync(courseId, cancellationToken) ?? throw new ServiceNotFoundException($"Course with ID {courseId} not found.");
-        if (course.InstructorId != _currentUserService.UserId && !_currentUserService.IsInRole("Admin"))
+        var course = await _unitOfWork.CourseRepository.GetDetailedCourseConditionallyAsync(courseId, true, false, true, cancellationToken) ?? throw new ServiceNotFoundException($"Course with ID {courseId} not found.");
+        if (!AuthorizationHelper.CanEditCourse(_currentUserService, course.InstructorId))
         {
             throw new ServiceAuthorizationException("You are not authorized to create sections in this course.");
         }
-
         var sectionToCreate = _mapper.Map<Section>(createSectionDto);
         sectionToCreate.CourseId = courseId;
-
         var sectionsInCourse = (await _unitOfWork.SectionRepository.ListAsync(s => s.CourseId == courseId, s => s.Order, true, cancellationToken)).ToList();
-
         if (createSectionDto.Order == null)
         {
             sectionToCreate.Order = sectionsInCourse.Count > 0 ? sectionsInCourse.Max(s => s.Order) + 1 : 0;
@@ -62,48 +83,30 @@ public class SectionService(IUnitOfWork unitOfWork, IMapper mapper, ICurrentUser
             {
                 throw new ServiceBadRequestException("Order cannot be negative.");
             }
-
             sectionToCreate.Order = specifiedOrder;
-
-            // Shift sections if the specified order already exists or to fill a gap appropriately
-            var sectionsToShift = sectionsInCourse.Where(s => s.Order >= specifiedOrder).ToList();
-            if (sectionsToShift.Count != 0)
-            {
-                foreach (var sec in sectionsToShift.OrderBy(s => s.Order)) // Process in order to avoid conflicts if shifting by more than 1
-                {
-                    sec.Order++;
-                    sec.UpdatedAt = DateTime.UtcNow;
-                    // No need to call UpdateAsync here, SaveChangesAsync will handle it
-                }
-            }
+            OrderManager.ShiftOrderForInsert(sectionsInCourse, specifiedOrder, s => s.Order, (s, o) => s.Order = o, s => s.UpdatedAt = DateTime.UtcNow);
         }
-
         await _unitOfWork.SectionRepository.AddAsync(sectionToCreate, cancellationToken);
-        await _unitOfWork.SaveChangesAsync(cancellationToken); // This will save the new section and updated orders of shifted sections
-
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
         return _mapper.Map<SectionDto>(sectionToCreate);
     }
 
     public async Task UpdateSectionAsync(Guid courseId, Guid sectionId, UpdateSectionDto updateSectionDto, CancellationToken cancellationToken)
     {
         var course = await _unitOfWork.CourseRepository.GetByIdAsync(courseId, cancellationToken) ?? throw new ServiceNotFoundException($"Course with ID {courseId} not found.");
-        if (course.InstructorId != _currentUserService.UserId && !_currentUserService.IsInRole("Admin"))
+        if (!AuthorizationHelper.CanEditCourse(_currentUserService, course.InstructorId))
         {
             throw new ServiceAuthorizationException("You are not authorized to update sections in this course.");
         }
-
         var sectionToUpdate = await _unitOfWork.SectionRepository.GetByIdAsync(sectionId, cancellationToken);
         if (sectionToUpdate == null || sectionToUpdate.CourseId != courseId)
         {
             throw new ServiceNotFoundException($"Section with ID {sectionId} not found in course {courseId} for update.");
         }
-
         var originalOrder = sectionToUpdate.Order;
         var newOrder = updateSectionDto.Order;
-
         _mapper.Map(updateSectionDto, sectionToUpdate);
         sectionToUpdate.UpdatedAt = DateTime.UtcNow;
-
         if (newOrder.HasValue && newOrder != originalOrder)
         {
             if (newOrder.Value < 0)
@@ -111,70 +114,59 @@ public class SectionService(IUnitOfWork unitOfWork, IMapper mapper, ICurrentUser
                 throw new ServiceBadRequestException("Order cannot be negative.");
             }
             var sectionsInCourse = (await _unitOfWork.SectionRepository.ListAsync(s => s.CourseId == courseId && s.Id != sectionId, q => q.Order, true, cancellationToken)).ToList();
-
-            // Scenario 1: Moving a section to a lower order (e.g., 5th to 2nd)
-            // Sections from newOrder up to originalOrder-1 need to be incremented
-            if (newOrder < originalOrder)
-            {
-                foreach (var s in sectionsInCourse.Where(s => s.Order >= newOrder && s.Order < originalOrder).OrderBy(s => s.Order))
-                {
-                    s.Order++;
-                    s.UpdatedAt = DateTime.UtcNow;
-                }
-            }
-            // Scenario 2: Moving a section to a higher order (e.g., 2nd to 5th)
-            // Sections from originalOrder+1 up to newOrder need to be decremented
-            else
-            {
-                foreach (var s in sectionsInCourse.Where(s => s.Order > originalOrder && s.Order <= newOrder).OrderByDescending(s => s.Order))
-                {
-                    s.Order--;
-                    s.UpdatedAt = DateTime.UtcNow;
-                }
-            }
+            OrderManager.ShiftOrderForUpdate(sectionsInCourse, originalOrder, newOrder.Value, s => s.Order, (s, o) => s.Order = o, s => s.UpdatedAt = DateTime.UtcNow);
             sectionToUpdate.Order = newOrder.Value;
         }
-        else if (!newOrder.HasValue) // If order is explicitly set to null in DTO, treat it as no change to order.
+        else if (!newOrder.HasValue)
         {
-            // If UpdateSectionDto.Order is nullable and not provided, retain original order.
-            // If it's not nullable, this branch is not needed as mapping would handle it or validation.
-            // For this implementation, we assume Order in UpdateSectionDto is nullable.
-            // If it was intended to remove ordering, that's a different feature.
-            sectionToUpdate.Order = originalOrder; // Ensure it's not accidentally changed by mapper if DTO has null
+            sectionToUpdate.Order = originalOrder;
         }
-
-
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
     public async Task DeleteSectionAsync(Guid courseId, Guid sectionId, CancellationToken cancellationToken)
     {
         var course = await _unitOfWork.CourseRepository.GetByIdAsync(courseId, cancellationToken) ?? throw new ServiceNotFoundException($"Course with ID {courseId} not found.");
-        if (course.InstructorId != _currentUserService.UserId && !_currentUserService.IsInRole("Admin"))
+        if (!AuthorizationHelper.CanEditCourse(_currentUserService, course.InstructorId))
         {
             throw new ServiceAuthorizationException("You are not authorized to delete sections in this course.");
         }
-
         var sectionToDelete = await _unitOfWork.SectionRepository.GetByIdAsync(sectionId, cancellationToken);
         if (sectionToDelete == null || sectionToDelete.CourseId != courseId)
         {
             throw new ServiceNotFoundException($"Section with ID {sectionId} not found in course {courseId} for deletion.");
         }
-
         var deletedOrder = sectionToDelete.Order;
         await _unitOfWork.SectionRepository.DeleteAsync(sectionToDelete, cancellationToken);
-
-        // Re-order subsequent sections
         var sectionsToReOrder = (await _unitOfWork.SectionRepository.ListAsync(s => s.CourseId == courseId && s.Order > deletedOrder, s => s.Order, true, cancellationToken)).ToList();
-        if (sectionsToReOrder.Any())
+        OrderManager.ShiftOrderForDelete(sectionsToReOrder, deletedOrder, s => s.Order, (s, o) => s.Order = o, s => s.UpdatedAt = DateTime.UtcNow);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task UpdateSectionStatusAsync(Guid courseId, Guid sectionId, UpdateSectionStatusDto updateStatusDto, CancellationToken cancellationToken)
+    {
+        var course = await _unitOfWork.CourseRepository.GetByIdAsync(courseId, cancellationToken)
+            ?? throw new ServiceNotFoundException($"Course with ID {courseId} not found.");
+        if (!AuthorizationHelper.CanEditCourse(_currentUserService, course.InstructorId))
+            throw new ServiceAuthorizationException("You are not authorized to update section status in this course.");
+        var section = await _unitOfWork.SectionRepository.GetSectionWithLessonsAsync(sectionId, cancellationToken);
+        if (section == null || section.CourseId != courseId)
+            throw new ServiceNotFoundException($"Section with ID {sectionId} not found in course {courseId}.");
+        if (!Enum.TryParse<SectionStatus>(updateStatusDto.Status, true, out var newStatus))
+            throw new ServiceBadRequestException($"Invalid section status: '{updateStatusDto.Status}'. Valid values are {string.Join(", ", Enum.GetNames<SectionStatus>())}.");
+        if (newStatus == SectionStatus.Published && course.Status != CourseStatus.Published)
+            throw new ServiceBadRequestException("Cannot publish section when its parent course is not published.");
+        if ((newStatus == SectionStatus.Draft || newStatus == SectionStatus.Archived) && section.Status == SectionStatus.Published)
         {
-            foreach (var sec in sectionsToReOrder) // Already ordered by 'Order' ascending
+            LessonStatus targetLessonStatus = (newStatus == SectionStatus.Draft) ? LessonStatus.Draft : LessonStatus.Archived;
+            foreach (var lesson in section.Lessons.Where(l => l.Status == LessonStatus.Published))
             {
-                sec.Order--;
-                sec.UpdatedAt = DateTime.UtcNow;
+                lesson.Status = targetLessonStatus;
+                lesson.UpdatedAt = DateTime.UtcNow;
             }
         }
-
+        section.Status = newStatus;
+        section.UpdatedAt = DateTime.UtcNow;
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }

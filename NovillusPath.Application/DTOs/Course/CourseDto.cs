@@ -17,5 +17,5 @@ public class CourseDto
     public DateTime CreatedAt { get; init; }
     public DateTime UpdatedAt { get; init; }
     public IReadOnlyList<CategoryDto> Categories { get; init; } = [];
-    public IReadOnlyList<SectionDto> Sections { get; init; } = [];
+    public IReadOnlyList<SectionDto>? Sections { get; init; } = [];
 }

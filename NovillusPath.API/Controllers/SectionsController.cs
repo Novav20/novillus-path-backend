@@ -8,7 +8,7 @@ namespace NovillusPath.API.Controllers
 {
     [Route("api/courses/{courseId:guid}/sections")]
     [ApiController]
-    public class SectionsController(ISectionService sectionService) : ControllerBase
+    public class SectionsController(ISectionService sectionService) : BaseApiController
     {
         private readonly ISectionService _sectionService = sectionService; 
 
@@ -25,7 +25,7 @@ namespace NovillusPath.API.Controllers
             }
             catch (ServiceNotFoundException ex)
             {
-                return NotFound(ex.Message);
+                return NotFoundProblem(ex);
             }
         }
 
@@ -44,15 +44,15 @@ namespace NovillusPath.API.Controllers
             }
             catch (ServiceNotFoundException ex)
             {
-                return NotFound(ex.Message);
+                return NotFoundProblem(ex);
             }
             catch (ServiceAuthorizationException ex)
             {
-                return Forbid(ex.Message);
+                return ForbiddenProblem(ex);
             }
-            catch (ServiceBadRequestException ex) 
+            catch (ServiceBadRequestException ex)
             {
-                return BadRequest(ex.Message); 
+                return BadRequestProblem(ex);
             }
         }
 
@@ -68,14 +68,14 @@ namespace NovillusPath.API.Controllers
             }
             catch (ServiceNotFoundException ex)
             {
-                return NotFound(ex.Message);
+                return NotFoundProblem(ex);
             }
         }
 
         [HttpPut("{sectionId:guid}")]
         [Authorize(Roles = "Admin,Instructor")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)] 
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> UpdateSection([FromRoute] Guid courseId, [FromRoute] Guid sectionId, [FromBody] UpdateSectionDto updateSectionDto, CancellationToken cancellationToken)
@@ -87,17 +87,16 @@ namespace NovillusPath.API.Controllers
             }
             catch (ServiceNotFoundException ex)
             {
-                return NotFound(ex.Message);
+                return NotFoundProblem(ex);
             }
             catch (ServiceAuthorizationException ex)
             {
-                return Forbid(ex.Message);
+                return ForbiddenProblem(ex);
             }
-            catch (ServiceBadRequestException ex) 
+            catch (ServiceBadRequestException ex)
             {
-                return BadRequest(ex.Message); 
+                return BadRequestProblem(ex);
             }
-            // ASP.NET Core handles model validation (BadRequest) automatically.
         }
 
         [HttpDelete("{sectionId:guid}")]
@@ -114,11 +113,38 @@ namespace NovillusPath.API.Controllers
             }
             catch (ServiceNotFoundException ex)
             {
-                return NotFound(ex.Message);
+                return NotFoundProblem(ex);
             }
             catch (ServiceAuthorizationException ex)
             {
-                return Forbid(ex.Message);
+                return ForbiddenProblem(ex);
+            }
+        }
+
+        [HttpPatch("{sectionId:guid}/status")]
+        [Authorize(Roles = "Admin,Instructor")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UpdateSectionStatus([FromRoute] Guid courseId, [FromRoute] Guid sectionId, [FromBody] UpdateSectionStatusDto updateSectionStatusDto, CancellationToken cancellationToken)
+        {
+            try
+            {
+                await _sectionService.UpdateSectionStatusAsync(courseId, sectionId, updateSectionStatusDto, cancellationToken);
+                return NoContent();
+            }
+            catch (ServiceNotFoundException ex)
+            {
+                return NotFoundProblem(ex);
+            }
+            catch (ServiceAuthorizationException ex)
+            {
+                return ForbiddenProblem(ex);
+            }
+            catch (ServiceBadRequestException ex)
+            {
+                return BadRequestProblem(ex);
             }
         }
     }

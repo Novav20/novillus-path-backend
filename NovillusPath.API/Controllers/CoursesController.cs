@@ -1,77 +1,63 @@
-using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NovillusPath.Application.DTOs.Course;
-using NovillusPath.Application.Interfaces.Common;
-using NovillusPath.Application.Interfaces.Persistence;
-using NovillusPath.Domain.Entities;
+using NovillusPath.Application.Exceptions;
+using NovillusPath.Application.Interfaces.Services;
+using System.Net.Mime;
 
 namespace NovillusPath.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class CoursesController(IUnitOfWork unitOfWork, IMapper mapper, ICurrentUserService currentUserService) : ControllerBase
+[Produces(MediaTypeNames.Application.Json)]
+public class CoursesController(ICourseService courseService) : BaseApiController
 {
-    private readonly IMapper _mapper = mapper;
-    private readonly IUnitOfWork _unitOfWork = unitOfWork;
-    private readonly ICurrentUserService _currentUserService = currentUserService;
+    private readonly ICourseService _courseService = courseService;
 
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IReadOnlyList<CourseDto>))]
     public async Task<ActionResult<IReadOnlyList<CourseDto>>> GetCourses(CancellationToken cancellationToken)
     {
-        var courses = await _unitOfWork.CourseRepository.ListAllAsync(cancellationToken);
-        var coursesDto = _mapper.Map<IReadOnlyList<CourseDto>>(courses);
-        return Ok(coursesDto);
+        var courses = await _courseService.GetCoursesAsync(cancellationToken);
+        return Ok(courses);
     }
 
     [HttpGet("{id:guid}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CourseDto))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<CourseDto>> GetCourseById(Guid id, CancellationToken cancellationToken)
     {
-        var course = await _unitOfWork.CourseRepository.GetByIdAsync(id, cancellationToken);
-        if (course == null) return NotFound($"Course with ID {id} not found.");
-        var courseDto = _mapper.Map<CourseDto>(course);
-        return Ok(courseDto);
-
+        try
+        {
+            var course = await _courseService.GetCourseByIdAsync(id, cancellationToken);
+            return Ok(course);
+        }
+        catch (ServiceNotFoundException ex)
+        {
+            return NotFoundProblem(ex);
+        }
     }
 
     [HttpPost]
     [Authorize(Roles = "Instructor,Admin")]
-    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(CourseDto))]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<CourseDto>> CreateCourse([FromBody] CreateCourseDto createCourseDto, CancellationToken cancellationToken)
     {
-        var instructorId = _currentUserService.UserId;
-        if (!instructorId.HasValue) return Unauthorized("Instructor ID could not be determined from token.");
-
-        var courseToCreate = _mapper.Map<Course>(createCourseDto);
-        courseToCreate.InstructorId = instructorId.Value;
-
-        if (createCourseDto.CategoryIds != null && createCourseDto.CategoryIds.Count > 0)
+        try
         {
-            var categories = await _unitOfWork.CategoryRepository
-                .ListAsync(c => createCourseDto.CategoryIds.Contains(c.Id), cancellationToken);
-
-            if (categories.Count != createCourseDto.CategoryIds.Distinct().Count())
-            {
-                var foundIds = categories.Select(c => c.Id).ToList();
-                var missingIds = createCourseDto.CategoryIds.Except(foundIds).ToList();
-                return BadRequest($"Categories with IDs {string.Join(", ", missingIds)} not found.");
-            }
-
-            courseToCreate.Categories = [.. categories];
-
+            var course = await _courseService.CreateCourseAsync(createCourseDto, cancellationToken);
+            return CreatedAtAction(nameof(GetCourseById), new { id = course.Id }, course);
         }
-
-        await _unitOfWork.CourseRepository.AddAsync(courseToCreate, cancellationToken);
-
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-        var courseDto = _mapper.Map<CourseDto>(courseToCreate); // TODO: We'll update this DTO mapping later
-
-        return CreatedAtAction(nameof(GetCourseById), new { id = courseDto.Id }, courseDto);
+        catch (ServiceAuthorizationException ex)
+        {
+            return UnauthorizedProblem(ex);
+        }
+        catch (ServiceBadRequestException ex)
+        {
+            return BadRequestProblem(ex);
+        }
     }
 
     [HttpPut("{id:guid}")]
@@ -80,46 +66,25 @@ public class CoursesController(IUnitOfWork unitOfWork, IMapper mapper, ICurrentU
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-
-    public async Task<ActionResult> UpdateCourse(Guid id, [FromBody] UpdateCourseDto updateCourseDto, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateCourse(Guid id, [FromBody] UpdateCourseDto updateCourseDto, CancellationToken cancellationToken)
     {
-        var course = await _unitOfWork.CourseRepository.GetByIdAsync(id, cancellationToken);
-        if (course == null) return NotFound($"Course with ID {id} not found.");
-
-        var currentUserId = _currentUserService.UserId;
-        bool isAdmin = _currentUserService.IsInRole("Admin");
-
-        if (!isAdmin && course.InstructorId != currentUserId)
+        try
         {
-            return Forbid("You are not authorized to update this course.");
+            await _courseService.UpdateCourseAsync(id, updateCourseDto, cancellationToken);
+            return NoContent();
         }
-
-        _mapper.Map(updateCourseDto, course);
-
-        if (updateCourseDto.CategoryIds != null)
+        catch (ServiceNotFoundException ex)
         {
-            if (updateCourseDto.CategoryIds.Count == 0)
-            {
-                course.Categories.Clear();
-            }
-            else
-            {
-                var categoriesFromDto = await _unitOfWork.CategoryRepository
-                    .ListAsync(c => updateCourseDto.CategoryIds.Contains(c.Id), cancellationToken);
-
-                if (categoriesFromDto.Count != updateCourseDto.CategoryIds.Distinct().Count())
-                {
-                    var foundIds = categoriesFromDto.Select(c => c.Id).ToList();
-                    var missingIds = updateCourseDto.CategoryIds.Except(foundIds).ToList();
-                    return BadRequest($"Categories with IDs {string.Join(", ", missingIds)} not found.");
-                }
-                course.Categories.Clear();
-                course.Categories = [.. categoriesFromDto];
-            }
+            return NotFoundProblem(ex);
         }
-        course.UpdatedAt = DateTime.UtcNow;
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
-        return NoContent();
+        catch (ServiceAuthorizationException ex)
+        {
+            return ForbiddenProblem(ex);
+        }
+        catch (ServiceBadRequestException ex)
+        {
+            return BadRequestProblem(ex);
+        }
     }
 
     [HttpDelete("{id:guid}")]
@@ -127,20 +92,47 @@ public class CoursesController(IUnitOfWork unitOfWork, IMapper mapper, ICurrentU
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<ActionResult> DeleteCourse(Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> DeleteCourse(Guid id, CancellationToken cancellationToken)
     {
-        var course = await _unitOfWork.CourseRepository.GetByIdAsync(id, cancellationToken);
-        if (course == null) return NotFound($"Course with ID {id} not found.");
-
-        var currentUserId = _currentUserService.UserId;
-        bool isAdmin = _currentUserService.IsInRole("Admin");
-
-        if (!isAdmin && course.InstructorId != currentUserId)
+        try
         {
-            return Forbid("You are not authorized to delete this course.");
+            await _courseService.DeleteCourseAsync(id, cancellationToken);
+            return NoContent();
         }
-        await _unitOfWork.CourseRepository.DeleteAsync(course, cancellationToken);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
-        return NoContent();
+        catch (ServiceNotFoundException ex)
+        {
+            return NotFoundProblem(ex);
+        }
+        catch (ServiceAuthorizationException ex)
+        {
+            return ForbiddenProblem(ex);
+        }
+    }
+
+    [HttpPatch("{id:guid}/status")]
+    [Authorize(Roles = "Instructor,Admin")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> UpdateCourseStatus(Guid id, [FromBody] UpdateCourseStatusDto updateCourseStatusDto, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await _courseService.UpdateCourseStatusAsync(id, updateCourseStatusDto, cancellationToken);
+            return NoContent();
+        }
+        catch (ServiceNotFoundException ex)
+        {
+            return NotFoundProblem(ex);
+        }
+        catch (ServiceAuthorizationException ex)
+        {
+            return ForbiddenProblem(ex);
+        }
+        catch (ServiceBadRequestException ex)
+        {
+            return BadRequestProblem(ex);
+        }
     }
 }

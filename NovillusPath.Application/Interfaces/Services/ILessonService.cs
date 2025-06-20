@@ -9,4 +9,5 @@ public interface ILessonService
     Task<LessonDto> CreateLessonAsync(Guid sectionId, CreateLessonDto createLessonDto, CancellationToken cancellationToken);
     Task UpdateLessonAsync(Guid sectionId, Guid lessonId, UpdateLessonDto updateLessonDto, CancellationToken cancellationToken);
     Task DeleteLessonAsync(Guid sectionId, Guid lessonId, CancellationToken cancellationToken);
+    Task UpdateLessonStatusAsync(Guid sectionId, Guid lessonId, UpdateLessonStatusDto updateStatusDto, CancellationToken cancellationToken);
 }
