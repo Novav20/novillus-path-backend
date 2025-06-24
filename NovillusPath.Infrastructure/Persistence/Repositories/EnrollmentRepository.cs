@@ -11,4 +11,17 @@ public class EnrollmentRepository(NovillusDbContext context) : EfRepository<Enro
         return await _context.Enrollments
             .FirstOrDefaultAsync(e => e.UserId == userId && e.CourseId == courseId, cancellationToken);
     }
+
+    public async Task<IReadOnlyList<Enrollment>> GetEnrollmentsByUserIdAsync(Guid userId, bool includeCourseDetails, CancellationToken cancellationToken)
+    {
+        IQueryable<Enrollment> query = _context.Enrollments.Where(e => e.UserId == userId);
+
+        if (includeCourseDetails)
+        {
+            query = query.Include(e => e.Course)
+                .ThenInclude(c => c.Categories);
+        }
+        query = query.OrderByDescending(e => e.EnrolledAt);
+        return await query.AsNoTracking().ToListAsync(cancellationToken);
+    }
 }

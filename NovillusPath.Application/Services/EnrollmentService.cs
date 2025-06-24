@@ -1,5 +1,6 @@
 using System;
 using AutoMapper;
+using NovillusPath.Application.DTOs.Course;
 using NovillusPath.Application.Exceptions;
 using NovillusPath.Application.Helpers;
 using NovillusPath.Application.Interfaces.Common;
@@ -10,10 +11,11 @@ using NovillusPath.Domain.Enums;
 
 namespace NovillusPath.Application.Services;
 
-public class EnrollmentService(IUnitOfWork unitOfWork, ICurrentUserService currentUserService) : IEnrollmentService
+public class EnrollmentService(IUnitOfWork unitOfWork, ICurrentUserService currentUserService, IMapper mapper) : IEnrollmentService
 {
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly ICurrentUserService _currentUserService = currentUserService;
+    private readonly IMapper _mapper = mapper;
     public async Task EnrollAsync(Guid courseId, Guid userId, CancellationToken cancellationToken) // userId is the ID of the user TO BE ENROLLED
     {
         // 1. Authorization Check: Who is the current user, and can they enroll 'userId'?
@@ -47,6 +49,18 @@ public class EnrollmentService(IUnitOfWork unitOfWork, ICurrentUserService curre
         await _unitOfWork.EnrollmentRepository.AddAsync(enrollment, cancellationToken);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<CourseDto>> GetUserEnrolledCoursesAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        var enrollments = await _unitOfWork.EnrollmentRepository.GetEnrollmentsByUserIdAsync(userId, true, cancellationToken);
+
+        var courseDtos = enrollments
+            .Where(e => e.Course != null)
+            .Select(e => _mapper.Map<CourseDto>(e.Course))
+            .ToList();
+
+        return courseDtos;
     }
 
     public async Task UnenrollAsync(Guid courseId, Guid userId, CancellationToken cancellationToken)

@@ -1,4 +1,5 @@
 using System;
+using NovillusPath.Application.DTOs.Course;
 
 namespace NovillusPath.Application.Interfaces.Services;
 
@@ -26,4 +27,12 @@ public interface IEnrollmentService
     /// <exception cref="ServiceNotFoundException">If the enrollment does not exist.</exception>
     /// <exception cref="ServiceAuthorizationException">If the user is not authorized to unenroll (e.g., trying to unenroll someone else).</exception>
     Task UnenrollAsync(Guid courseId, Guid userId, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Gets a list of courses the specified user is currently enrolled in.
+    /// </summary>
+    /// <param name="userId">The ID of the user.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>A list of Course DTOs representing the enrolled courses.</returns>
+    Task<IReadOnlyList<CourseDto>> GetUserEnrolledCoursesAsync(Guid userId, CancellationToken cancellationToken);
 }
