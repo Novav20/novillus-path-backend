@@ -17,6 +17,7 @@ public static class ApplicationServiceRegistration
         services.AddScoped<ICourseService, CourseService>();
         services.AddScoped<ISectionService, SectionService>();
         services.AddScoped<ILessonService, LessonService>();
+        services.AddScoped<IEnrollmentService, EnrollmentService>();
 
         return services;
     }

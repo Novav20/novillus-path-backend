@@ -15,8 +15,8 @@ public class NovillusDbContext(DbContextOptions<NovillusDbContext> options)
     public DbSet<Category> Categories { get; set; }
     public DbSet<Lesson> Lessons { get; set; }
     public DbSet<ContentBlock> ContentBlocks { get; set; }
+    public DbSet<Enrollment> Enrollments { get; set; }
     // public DbSet<Review> Reviews { get; set; }
-    // public DbSet<Enrollment> Enrollments { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -99,6 +99,25 @@ public class NovillusDbContext(DbContextOptions<NovillusDbContext> options)
                 .HasForeignKey(cb => cb.LessonId)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Enrollment>(entity =>
+        {
+            entity.HasOne(e => e.Course)
+                .WithMany(c => c.Enrollments)
+                .HasForeignKey(e => e.CourseId)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(e => e.User)
+                .WithMany(u => u.Enrollments)
+                .HasForeignKey(e => e.UserId)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Unique constraint to prevent duplicate enrollments
+            entity.HasIndex(e => new { e.UserId, e.CourseId })
+                .IsUnique();
         });
     }
 }

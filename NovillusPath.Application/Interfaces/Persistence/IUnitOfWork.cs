@@ -6,5 +6,6 @@ public interface IUnitOfWork : IAsyncDisposable
     ICategoryRepository CategoryRepository { get; }
     ISectionRepository SectionRepository { get; }
     ILessonRepository LessonRepository { get; }
+    IEnrollmentRepository EnrollmentRepository { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

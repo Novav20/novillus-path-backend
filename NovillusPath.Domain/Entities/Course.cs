@@ -20,4 +20,5 @@ public class Course
     public ApplicationUser? Instructor { get; set; }
     public ICollection<Category> Categories { get; set; } = [];
     public ICollection<Section> Sections { get; set; } = [];
+    public ICollection<Enrollment> Enrollments { get; set; } = [];
 }
