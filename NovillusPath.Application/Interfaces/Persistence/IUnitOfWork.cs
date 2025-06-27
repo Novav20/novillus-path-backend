@@ -7,5 +7,6 @@ public interface IUnitOfWork : IAsyncDisposable
     ISectionRepository SectionRepository { get; }
     ILessonRepository LessonRepository { get; }
     IEnrollmentRepository EnrollmentRepository { get; }
+    IReviewRepository ReviewRepository { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

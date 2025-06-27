@@ -72,7 +72,7 @@ public class LessonService(IUnitOfWork unitOfWork, IMapper mapper, ICurrentUserS
         var currentUserId = _currentUserService.UserId;
         bool isAdmin = _currentUserService.IsInRole("Admin");
         bool isInstructor = section.Course.InstructorId == currentUserId;
-        if (!VisibilityHelper.CanUserViewSection(section, currentUserId, isAdmin, isInstructor))
+        if (!VisibilityHelper.CanUserViewSection(section, _currentUserService))
         {
             throw new ServiceNotFoundException($"Section with ID {sectionId} not found.");
         }
@@ -93,7 +93,7 @@ public class LessonService(IUnitOfWork unitOfWork, IMapper mapper, ICurrentUserS
         var currentUserId = _currentUserService.UserId;
         bool isAdmin = _currentUserService.IsInRole("Admin");
         bool isInstructor = section.Course.InstructorId == currentUserId;
-        if (!VisibilityHelper.CanUserViewSection(section, currentUserId, isAdmin, isInstructor))
+        if (!VisibilityHelper.CanUserViewSection(section, _currentUserService))
         {
             throw new ServiceNotFoundException($"Lesson with ID {lessonId} not found in section {sectionId}.");
         }
@@ -102,7 +102,7 @@ public class LessonService(IUnitOfWork unitOfWork, IMapper mapper, ICurrentUserS
         {
             throw new ServiceNotFoundException($"Lesson with ID {lessonId} not found in section {sectionId}.");
         }
-        if (!VisibilityHelper.CanUserViewLesson(lesson, section, section.Course, currentUserId, isAdmin, isInstructor))
+        if (!VisibilityHelper.CanUserViewLesson(lesson, section, section.Course, _currentUserService))
         {
             throw new ServiceNotFoundException($"Lesson with ID {lessonId} not found in section {sectionId}.");
         }

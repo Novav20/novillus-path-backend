@@ -16,7 +16,7 @@ public class NovillusDbContext(DbContextOptions<NovillusDbContext> options)
     public DbSet<Lesson> Lessons { get; set; }
     public DbSet<ContentBlock> ContentBlocks { get; set; }
     public DbSet<Enrollment> Enrollments { get; set; }
-    // public DbSet<Review> Reviews { get; set; }
+    public DbSet<Review> Reviews { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -119,5 +119,24 @@ public class NovillusDbContext(DbContextOptions<NovillusDbContext> options)
             entity.HasIndex(e => new { e.UserId, e.CourseId })
                 .IsUnique();
         });
+
+        modelBuilder.Entity<Review>(entity =>
+        {
+            entity.HasOne(r => r.User)
+                .WithMany(u => u.Reviews)
+                .HasForeignKey(r => r.UserId)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(r => r.Course)
+                .WithMany(c => c.Reviews)
+                .HasForeignKey(r => r.CourseId)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(r => new { r.UserId, r.CourseId }).IsUnique();
+        });
+
+
     }
 }

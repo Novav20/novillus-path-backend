@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using NovillusPath.Application.DTOs.Section;
 using NovillusPath.Application.Exceptions;
 using NovillusPath.Application.Interfaces.Services;
-using NovillusPath.Application.Services;
 namespace NovillusPath.API.Controllers
 {
     [Route("api/courses/{courseId:guid}/sections")]

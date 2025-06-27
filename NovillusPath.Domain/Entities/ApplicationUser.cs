@@ -12,5 +12,5 @@ public class ApplicationUser : IdentityUser<Guid>
 
     public ICollection<Course> CreatedCourses { get; set; } = [];
     public ICollection<Enrollment> Enrollments { get; set; } = [];
-    // public ICollection<Review> Reviews { get; set; } = [];
+    public ICollection<Review> Reviews { get; set; } = [];
 }

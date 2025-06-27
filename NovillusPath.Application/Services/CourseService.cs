@@ -40,7 +40,7 @@ public class CourseService(IUnitOfWork unitOfWork, IMapper mapper, ICurrentUserS
         var currentUserId = _currentUserService.UserId;
         bool isAdmin = _currentUserService.IsInRole("Admin");
         bool isInstructor = _currentUserService.IsInRole("Instructor");
-        if (!VisibilityHelper.CanUserViewCourse(course, currentUserId, isAdmin, isInstructor))
+        if (!VisibilityHelper.CanUserViewCourse(course, _currentUserService))
         {
             throw new ServiceNotFoundException($"Course with ID {id} not found.");
         }

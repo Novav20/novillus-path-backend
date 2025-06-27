@@ -1,4 +1,3 @@
-using System;
 using NovillusPath.Application.DTOs.Course;
 
 namespace NovillusPath.Application.Interfaces.Services;

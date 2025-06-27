@@ -25,7 +25,7 @@ public class SectionService(IUnitOfWork unitOfWork, IMapper mapper, ICurrentUser
         var currentUserId = _currentUserService.UserId;
         bool isAdmin = _currentUserService.IsInRole("Admin");
         bool isInstructor = course.InstructorId == currentUserId;
-        if (!VisibilityHelper.CanUserViewCourse(course, currentUserId, isAdmin, isInstructor))
+        if (!VisibilityHelper.CanUserViewCourse(course, _currentUserService))
         {
             throw new ServiceNotFoundException($"Course with ID {courseId} not found.");
         }
@@ -50,7 +50,7 @@ public class SectionService(IUnitOfWork unitOfWork, IMapper mapper, ICurrentUser
         var currentUserId = _currentUserService.UserId;
         bool isAdmin = _currentUserService.IsInRole("Admin");
         bool isInstructor = section.Course.InstructorId == currentUserId;
-        if (!VisibilityHelper.CanUserViewSection(section, currentUserId, isAdmin, isInstructor))
+        if (!VisibilityHelper.CanUserViewSection(section, _currentUserService))
         {
             throw new ServiceNotFoundException($"Section with ID {sectionId} not found in course {courseId}.");
         }

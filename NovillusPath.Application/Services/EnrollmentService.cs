@@ -1,4 +1,3 @@
-using System;
 using AutoMapper;
 using NovillusPath.Application.DTOs.Course;
 using NovillusPath.Application.Exceptions;

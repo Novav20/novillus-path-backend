@@ -12,7 +12,7 @@ public class UnitOfWork(NovillusDbContext context) : IUnitOfWork
     private ISectionRepository? _sectionRepository;
     private ILessonRepository? _lessonRepository;
     private IEnrollmentRepository? _enrollmentRepository;
-
+    private IReviewRepository? _reviewRepository;
     public ICourseRepository CourseRepository =>
         _courseRepository ??= new CourseRepository(_context);
 
@@ -27,6 +27,9 @@ public class UnitOfWork(NovillusDbContext context) : IUnitOfWork
 
     public IEnrollmentRepository EnrollmentRepository =>
         _enrollmentRepository ??= new EnrollmentRepository(_context);
+
+    public IReviewRepository ReviewRepository =>
+        _reviewRepository ??= new ReviewRepository(_context);
 
     public async ValueTask DisposeAsync()
     {

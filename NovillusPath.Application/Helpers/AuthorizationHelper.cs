@@ -11,10 +11,15 @@ public static class AuthorizationHelper
         user.UserId.HasValue && user.UserId.Value == targetUserId;
     public static bool CanEditCourse(ICurrentUserService user, Guid instructorId) =>
         IsAdmin(user) || IsOwner(user.UserId, instructorId);
-    public static bool CanPerformEnrollmentAction(ICurrentUserService user, Guid targetUserId)
-        => IsAdmin(user) || (IsStudent(user) && IsCurrentUserTheTargetUser(user, targetUserId));
     public static bool CanEditSection(ICurrentUserService user, Guid instructorId) =>
         IsAdmin(user) || IsOwner(user.UserId, instructorId);
     public static bool CanEditLesson(ICurrentUserService user, Guid instructorId) =>
         IsAdmin(user) || IsOwner(user.UserId, instructorId);
+    public static bool CanPerformEnrollmentAction(ICurrentUserService user, Guid targetUserId)
+        => IsAdmin(user) || (IsStudent(user) && IsCurrentUserTheTargetUser(user, targetUserId));
+    public static bool CanPerformReviewAction(ICurrentUserService user)
+        => IsStudent(user);
+    public static bool CanModifyReview(ICurrentUserService user, Guid targetUserId)
+        => IsAdmin(user) || IsCurrentUserTheTargetUser(user, targetUserId);
+    
 }
