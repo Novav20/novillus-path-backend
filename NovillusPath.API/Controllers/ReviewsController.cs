@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NovillusPath.Application.DTOs.Common;
 using NovillusPath.Application.DTOs.Review;
 using NovillusPath.Application.Exceptions;
 using NovillusPath.Application.Interfaces.Services;
@@ -13,14 +14,19 @@ namespace NovillusPath.API.Controllers
         private readonly IReviewService _reviewService = reviewService;
 
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IReadOnlyList<ReviewDto>))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PagedResult<ReviewDto>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<IReadOnlyList<ReviewDto>>> GetReviewsByCourseIdAsync([FromRoute] Guid courseId, CancellationToken cancellationToken)
+        public async Task<ActionResult<PagedResult<ReviewDto>>> GetReviewsByCourseIdAsync(
+            [FromRoute] Guid courseId,
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10,
+            CancellationToken cancellationToken = default
+            )
         {
             try
             {
-                var reviewDtos = await _reviewService.GetReviewsByCourseIdAsync(courseId, cancellationToken);
-                return Ok(reviewDtos);
+                var pagedResult = await _reviewService.GetPagedReviewsByCourseIdAsync(courseId, pageNumber, pageSize, cancellationToken);
+                return Ok(pagedResult);
             }
             catch (ServiceNotFoundException ex)
             {
@@ -28,7 +34,7 @@ namespace NovillusPath.API.Controllers
             }
         }
 
-        [HttpGet("{reviewId:guid}")]
+        [HttpGet("{reviewId:guid}", Name = "GetReviewById")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ReviewDto))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<ReviewDto>> GetReviewByIdAsync([FromRoute] Guid courseId, [FromRoute] Guid reviewId, CancellationToken cancellationToken)
@@ -55,7 +61,7 @@ namespace NovillusPath.API.Controllers
             try
             {
                 var reviewDto = await _reviewService.CreateReviewAsync(courseId, createReviewDto, cancellationToken);
-                return CreatedAtAction(nameof(GetReviewByIdAsync), new { courseId, reviewId = reviewDto.Id }, reviewDto);
+                return CreatedAtRoute("GetReviewById", new { courseId, reviewId = reviewDto.Id }, reviewDto);
             }
             catch (ServiceNotFoundException ex)
             {

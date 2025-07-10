@@ -12,5 +12,7 @@ public class CategoryMappingProfile : Profile
         CreateMap<CreateCategoryDto, Category>();
         CreateMap<UpdateCategoryDto, Category>()
             .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
+
+        CreateMap<CategoryListItemDto, CategoryDto>();
     }
 }

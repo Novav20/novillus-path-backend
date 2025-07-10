@@ -1,5 +1,7 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
+using NovillusPath.Application.DTOs.Category;
+using NovillusPath.Application.DTOs.Course;
 using NovillusPath.Application.Interfaces.Persistence;
 using NovillusPath.Domain.Entities;
 
@@ -36,7 +38,7 @@ public class CourseRepository(NovillusDbContext context) : EfRepository<Course>(
         return await query.FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<IReadOnlyList<Course>> GetFilteredCoursesAsync(Expression<Func<Course, bool>>? filterPredicate, CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<CourseListProjectionDto>> GetFilteredCoursesAsync(Expression<Func<Course, bool>>? filterPredicate, CancellationToken cancellationToken)
     {
         IQueryable<Course> query = _context.Courses.Include(c => c.Categories);
         if (filterPredicate != null)
@@ -44,7 +46,32 @@ public class CourseRepository(NovillusDbContext context) : EfRepository<Course>(
             query = query.Where(filterPredicate);
         }
         query = query.OrderBy(c => c.Title);
-        return await query.AsNoTracking().ToListAsync(cancellationToken);
+
+        var projectedCourses = query.Select(c => new CourseListProjectionDto
+        {
+            Id = c.Id,
+            Title = c.Title,
+            Description = c.Description,
+            Price = c.Price,
+            Status = c.Status.ToString(),
+            DurationInWeeks = c.DurationInWeeks,
+            ImageUrl = c.ImageUrl,
+            StartDate = c.StartDate,
+            InstructorId = c.InstructorId,
+            CreatedAt = c.CreatedAt,
+            UpdatedAt = c.UpdatedAt,
+
+            Categories = c.Categories.Select(cat => new CategoryListItemDto
+            {
+                Id = cat.Id,
+                Name = cat.Name
+            }).ToList(),
+
+            TotalRatings = c.Reviews.Count != 0 ? c.Reviews.Count : 0,
+            AverageRating = c.Reviews.Count != 0 ? c.Reviews.Average(r => r.Rating) : 0
+        });
+
+        return await projectedCourses.AsNoTracking().ToListAsync(cancellationToken);
     }
 
     public async Task<Course?> GetFullCourseByIdAsync(Guid courseId, CancellationToken cancellationToken)
@@ -52,6 +79,7 @@ public class CourseRepository(NovillusDbContext context) : EfRepository<Course>(
         return await _context.Courses
             .Include(c => c.Instructor)
             .Include(c => c.Categories)
+            .Include(c => c.Reviews)
             .Include(c => c.Sections)
                 .ThenInclude(s => s.Lessons)
                     .ThenInclude(l => l.ContentBlocks)

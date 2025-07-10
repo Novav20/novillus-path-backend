@@ -1,3 +1,4 @@
+using NovillusPath.Application.DTOs.Common;
 using NovillusPath.Application.DTOs.Review;
 
 namespace NovillusPath.Application.Interfaces.Services;
@@ -59,5 +60,7 @@ public interface IReviewService
     /// <returns>A list of ReviewDto representing the reviews for the course.</returns>
     /// <exception cref="ServiceNotFoundException">If the course is not found.</exception>
     Task<IReadOnlyList<ReviewDto>> GetReviewsByCourseIdAsync(Guid courseId, CancellationToken cancellationToken);
+
+    Task<PagedResult<ReviewDto>> GetPagedReviewsByCourseIdAsync(Guid courseId, int pageNumber, int pageSize, CancellationToken cancellationToken);
 }
 

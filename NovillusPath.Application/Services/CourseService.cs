@@ -29,8 +29,10 @@ public class CourseService(IUnitOfWork unitOfWork, IMapper mapper, ICurrentUserS
                 ? (c => (c.InstructorId == currentUserId.Value) || (c.Status == CourseStatus.Published))
                 : (c => c.Status == CourseStatus.Published);
         }
-        var courses = await _unitOfWork.CourseRepository.GetFilteredCoursesAsync(filter, cancellationToken);
-        return _mapper.Map<IReadOnlyList<CourseDto>>(courses);
+
+        var coursesProjection = await _unitOfWork.CourseRepository.GetFilteredCoursesAsync(filter, cancellationToken);
+
+        return _mapper.Map<IReadOnlyList<CourseDto>>(coursesProjection);
     }
 
     public async Task<CourseDto> GetCourseByIdAsync(Guid id, CancellationToken cancellationToken)

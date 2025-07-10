@@ -1,4 +1,5 @@
 using AutoMapper;
+using NovillusPath.Application.DTOs.Common;
 using NovillusPath.Application.DTOs.Review;
 using NovillusPath.Application.Exceptions;
 using NovillusPath.Application.Helpers;
@@ -6,7 +7,6 @@ using NovillusPath.Application.Interfaces.Common;
 using NovillusPath.Application.Interfaces.Persistence;
 using NovillusPath.Application.Interfaces.Services;
 using NovillusPath.Domain.Entities;
-using NovillusPath.Domain.Enums;
 
 namespace NovillusPath.Application.Services;
 
@@ -121,6 +121,39 @@ public class ReviewService(IUnitOfWork unitOfWork, IMapper mapper, ICurrentUserS
 
         var reviews = await _unitOfWork.ReviewRepository.GetReviewsByCourseIdWithUserDetailsAsync(courseId, cancellationToken);
         return _mapper.Map<IReadOnlyList<ReviewDto>>(reviews);
+    }
+
+    public async Task<PagedResult<ReviewDto>> GetPagedReviewsByCourseIdAsync(
+        Guid courseId, int pageNumber, int pageSize, CancellationToken cancellationToken)
+    {
+        // 1. Validate course existence and review visibility for the current user
+        var course = await _unitOfWork.CourseRepository.GetByIdAsync(courseId, cancellationToken)
+            ?? throw new ServiceNotFoundException($"Course with ID {courseId} not found.");
+
+        if (!VisibilityHelper.CanUserViewReviewListForCourse(course, _currentUserService))
+        {
+            throw new ServiceNotFoundException($"Course with ID {courseId} not found.");
+        }
+
+        // 2. Retrieve paginated reviews and the total count from the repository
+        var (reviews, totalCount) = await _unitOfWork.ReviewRepository
+            .GetPagedReviewsByCourseIdWithUserDetailsAsync(courseId, pageNumber, pageSize, cancellationToken);
+
+        // 3. Map the list of Review entities to ReviewDto
+        var reviewDtos = _mapper.Map<IReadOnlyList<ReviewDto>>(reviews);
+
+        // 4. Calculate the total number of pages
+        int totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+
+        // 5. Build and return the paginated result
+        return new PagedResult<ReviewDto>
+        {
+            Items = reviewDtos,
+            TotalCount = totalCount,
+            PageNumber = pageNumber,
+            PageSize = pageSize,
+            TotalPages = totalPages
+        };
     }
 }
 
