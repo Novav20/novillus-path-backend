@@ -49,7 +49,7 @@ public class ReviewService(IUnitOfWork unitOfWork, IMapper mapper, ICurrentUserS
 
         var reviewWithDetails = await _unitOfWork.ReviewRepository.GetReviewDetailsByIdAsync(review.Id, cancellationToken) ?? throw new ServiceNotFoundException($"Newly created review with ID {review.Id} could not be retrieved.");
 
-        return _mapper.Map<ReviewDto>(reviewWithDetails);
+        return _mapper.Map<ReviewDto>(reviewWithDetails, opts => opts.Items["currentUserService"] = _currentUserService);
     }
 
     public async Task<ReviewDto> GetReviewByIdAsync(Guid courseId, Guid reviewId, CancellationToken cancellationToken)
@@ -62,7 +62,7 @@ public class ReviewService(IUnitOfWork unitOfWork, IMapper mapper, ICurrentUserS
             throw new ServiceNotFoundException($"Review with ID {reviewId} not found in course {courseId}.");
         }
         // Optional: Add visibility rules here too (e.g., only published reviews visible to public)
-        return _mapper.Map<ReviewDto>(review);
+        return _mapper.Map<ReviewDto>(review, opts => opts.Items["currentUserService"] = _currentUserService);
     }
 
     public async Task<ReviewDto> UpdateReviewAsync(Guid courseId, Guid reviewId, UpdateReviewDto updateReviewDto, CancellationToken cancellationToken)
@@ -88,7 +88,7 @@ public class ReviewService(IUnitOfWork unitOfWork, IMapper mapper, ICurrentUserS
         var updatedReviewWithDetails = await _unitOfWork.ReviewRepository.GetReviewDetailsByIdAsync(reviewId, cancellationToken)
             ?? throw new Exception($"Failed to retrieve updated review details for ID {reviewId}.");
 
-        return _mapper.Map<ReviewDto>(updatedReviewWithDetails);
+        return _mapper.Map<ReviewDto>(updatedReviewWithDetails, opts => opts.Items["currentUserService"] = _currentUserService);
     }
 
     public async Task DeleteReviewAsync(Guid reviewId, Guid courseId, CancellationToken cancellationToken)
@@ -120,7 +120,7 @@ public class ReviewService(IUnitOfWork unitOfWork, IMapper mapper, ICurrentUserS
         }
 
         var reviews = await _unitOfWork.ReviewRepository.GetReviewsByCourseIdWithUserDetailsAsync(courseId, cancellationToken);
-        return _mapper.Map<IReadOnlyList<ReviewDto>>(reviews);
+        return _mapper.Map<IReadOnlyList<ReviewDto>>(reviews, opts => opts.Items["currentUserService"] = _currentUserService);
     }
 
     public async Task<PagedResult<ReviewDto>> GetPagedReviewsByCourseIdAsync(
@@ -140,7 +140,7 @@ public class ReviewService(IUnitOfWork unitOfWork, IMapper mapper, ICurrentUserS
             .GetPagedReviewsByCourseIdWithUserDetailsAsync(courseId, pageNumber, pageSize, cancellationToken);
 
         // 3. Map the list of Review entities to ReviewDto
-        var reviewDtos = _mapper.Map<IReadOnlyList<ReviewDto>>(reviews);
+        var reviewDtos = _mapper.Map<IReadOnlyList<ReviewDto>>(reviews, opts => opts.Items["currentUserService"] = _currentUserService);
 
         // 4. Calculate the total number of pages
         int totalPages = (int)Math.Ceiling((double)totalCount / pageSize);

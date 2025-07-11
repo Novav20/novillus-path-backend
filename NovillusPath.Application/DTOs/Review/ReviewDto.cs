@@ -11,4 +11,6 @@ public class ReviewDto
     public DateTime UpdatedAt { get; init; }
     public Guid CourseId { get; init; }
     public Guid UserId { get; init; }
+    public bool CanEdit { get; set; }
+    public bool CanDelete { get; set; }
 }
