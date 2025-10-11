@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NovillusPath.Application.DTOs.Common;
 using NovillusPath.Application.DTOs.Course;
 using NovillusPath.Application.Exceptions;
 using NovillusPath.Application.Interfaces.Services;
@@ -15,10 +16,10 @@ public class CoursesController(ICourseService courseService) : BaseApiController
     private readonly ICourseService _courseService = courseService;
 
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IReadOnlyList<CourseDto>))]
-    public async Task<ActionResult<IReadOnlyList<CourseDto>>> GetCourses(CancellationToken cancellationToken)
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PagedResult<CourseDto>))]
+    public async Task<ActionResult<PagedResult<CourseDto>>> GetCourses([FromQuery] CourseSearchParamsDto searchParams, CancellationToken cancellationToken)
     {
-        var courses = await _courseService.GetCoursesAsync(cancellationToken);
+        var courses = await _courseService.GetCoursesAsync(searchParams, cancellationToken);
         return Ok(courses);
     }
 

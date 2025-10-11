@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using NovillusPath.Application.DTOs.Category;
+using NovillusPath.Application.DTOs.Common;
 using NovillusPath.Application.DTOs.Course;
 using NovillusPath.Application.DTOs.Dashboard;
 using NovillusPath.Application.Interfaces.Persistence;
@@ -39,16 +40,54 @@ public class CourseRepository(NovillusDbContext context) : EfRepository<Course>(
         return await query.FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<IReadOnlyList<CourseListProjectionDto>> GetFilteredCoursesAsync(Expression<Func<Course, bool>>? filterPredicate, CancellationToken cancellationToken)
+    public async Task<PagedResult<CourseListProjectionDto>> GetFilteredCoursesAsync(CourseSearchParamsDto searchParams, Expression<Func<Course, bool>>? filterPredicate, CancellationToken cancellationToken)
     {
         IQueryable<Course> query = _context.Courses.Include(c => c.Categories);
+
         if (filterPredicate != null)
         {
             query = query.Where(filterPredicate);
         }
-        query = query.OrderBy(c => c.Title);
 
-        var projectedCourses = query.Select(c => new CourseListProjectionDto
+        if (!string.IsNullOrWhiteSpace(searchParams.SearchTerm))
+        {
+            query = query.Where(c => c.Title.Contains(searchParams.SearchTerm) || (c.Description != null && c.Description.Contains(searchParams.SearchTerm)));
+        }
+
+        if (searchParams.CategoryId.HasValue)
+        {
+            query = query.Where(c => c.Categories.Any(cat => cat.Id == searchParams.CategoryId.Value));
+        }
+
+        if (searchParams.MinRating.HasValue)
+        { 
+            query = query.Where(c => c.Reviews.Any() && c.Reviews.Average(r => r.Rating) >= searchParams.MinRating.Value);
+        }
+
+        // Sorting
+        Expression<Func<Course, object>> keySelector = searchParams.SortBy?.ToLower() switch
+        {
+            "title" => c => c.Title,
+            "price" => c => c.Price,
+            "rating" => c => c.Reviews.Any() ? c.Reviews.Average(r => r.Rating) : 0,
+            "date" => c => c.CreatedAt,
+            _ => c => c.CreatedAt
+        };
+
+        if (string.Equals(searchParams.SortOrder, "desc", StringComparison.OrdinalIgnoreCase))
+        {
+            query = query.OrderByDescending(keySelector);
+        }
+        else
+        {
+            query = query.OrderBy(keySelector);
+        }
+
+        var totalCount = await query.CountAsync(cancellationToken);
+
+        var pagedQuery = query.Skip((searchParams.PageNumber - 1) * searchParams.PageSize).Take(searchParams.PageSize);
+
+        var projectedCourses = pagedQuery.Select(c => new CourseListProjectionDto
         {
             Id = c.Id,
             Title = c.Title,
@@ -61,18 +100,25 @@ public class CourseRepository(NovillusDbContext context) : EfRepository<Course>(
             InstructorId = c.InstructorId,
             CreatedAt = c.CreatedAt,
             UpdatedAt = c.UpdatedAt,
-
             Categories = c.Categories.Select(cat => new CategoryListItemDto
             {
                 Id = cat.Id,
                 Name = cat.Name
             }).ToList(),
-
             TotalRatings = c.Reviews.Count != 0 ? c.Reviews.Count : 0,
             AverageRating = c.Reviews.Count != 0 ? c.Reviews.Average(r => r.Rating) : 0
         });
 
-        return await projectedCourses.AsNoTracking().ToListAsync(cancellationToken);
+        var items = await projectedCourses.AsNoTracking().ToListAsync(cancellationToken);
+
+        return new PagedResult<CourseListProjectionDto>
+        {
+            Items = items,
+            TotalCount = totalCount,
+            PageNumber = searchParams.PageNumber,
+            PageSize = searchParams.PageSize,
+            TotalPages = (int)Math.Ceiling(totalCount / (double)searchParams.PageSize)
+        };
     }
 
     public async Task<Course?> GetFullCourseByIdAsync(Guid courseId, CancellationToken cancellationToken)

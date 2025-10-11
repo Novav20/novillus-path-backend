@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using AutoMapper;
+using NovillusPath.Application.DTOs.Common;
 using NovillusPath.Application.DTOs.Course;
 using NovillusPath.Application.Exceptions;
 using NovillusPath.Application.Helpers;
@@ -17,7 +18,7 @@ public class CourseService(IUnitOfWork unitOfWork, IMapper mapper, ICurrentUserS
     private readonly IMapper _mapper = mapper;
     private readonly ICurrentUserService _currentUserService = currentUserService;
 
-    public async Task<IReadOnlyList<CourseDto>> GetCoursesAsync(CancellationToken cancellationToken)
+    public async Task<PagedResult<CourseDto>> GetCoursesAsync(CourseSearchParamsDto searchParams, CancellationToken cancellationToken)
     {
         var currentUserId = _currentUserService.UserId;
         bool isAdmin = _currentUserService.IsInRole("Admin");
@@ -30,9 +31,18 @@ public class CourseService(IUnitOfWork unitOfWork, IMapper mapper, ICurrentUserS
                 : (c => c.Status == CourseStatus.Published);
         }
 
-        var coursesProjection = await _unitOfWork.CourseRepository.GetFilteredCoursesAsync(filter, cancellationToken);
+        var pagedCoursesProjection = await _unitOfWork.CourseRepository.GetFilteredCoursesAsync(searchParams, filter, cancellationToken);
 
-        return _mapper.Map<IReadOnlyList<CourseDto>>(coursesProjection);
+        var courseDtos = _mapper.Map<IReadOnlyList<CourseDto>>(pagedCoursesProjection.Items);
+
+        return new PagedResult<CourseDto>
+        {
+            Items = courseDtos,
+            TotalCount = pagedCoursesProjection.TotalCount,
+            PageNumber = pagedCoursesProjection.PageNumber,
+            PageSize = pagedCoursesProjection.PageSize,
+            TotalPages = pagedCoursesProjection.TotalPages
+        };
     }
 
     public async Task<CourseDto> GetCourseByIdAsync(Guid id, CancellationToken cancellationToken)
