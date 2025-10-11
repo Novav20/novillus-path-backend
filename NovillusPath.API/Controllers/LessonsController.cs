@@ -19,15 +19,8 @@ namespace NovillusPath.API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<IReadOnlyList<LessonDto>>> GetLessonsBySection([FromRoute] Guid courseId, [FromRoute] Guid sectionId, CancellationToken cancellationToken)
         {
-            try
-            {
-                var lessons = await _lessonService.GetLessonsBySectionAsync(sectionId, cancellationToken);
-                return Ok(lessons);
-            }
-            catch (ServiceNotFoundException ex)
-            {
-                return NotFoundProblem(ex);
-            }
+            var lessons = await _lessonService.GetLessonsBySectionAsync(sectionId, cancellationToken);
+            return Ok(lessons);
         }
 
         [HttpGet("{lessonId:guid}", Name = "GetLessonById")]
@@ -35,15 +28,8 @@ namespace NovillusPath.API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<LessonDto>> GetLessonById([FromRoute] Guid courseId, [FromRoute] Guid sectionId, [FromRoute] Guid lessonId, CancellationToken cancellationToken)
         {
-            try
-            {
-                var lesson = await _lessonService.GetLessonByIdAsync(sectionId, lessonId, cancellationToken);
-                return Ok(lesson);
-            }
-            catch (ServiceNotFoundException ex)
-            {
-                return NotFoundProblem(ex);
-            }
+            var lesson = await _lessonService.GetLessonByIdAsync(sectionId, lessonId, cancellationToken);
+            return Ok(lesson);
         }
 
         [HttpPost]
@@ -54,23 +40,8 @@ namespace NovillusPath.API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<LessonDto>> CreateLesson([FromRoute] Guid courseId, [FromRoute] Guid sectionId, [FromBody] CreateLessonDto createLessonDto, CancellationToken cancellationToken)
         {
-            try
-            {
-                var lesson = await _lessonService.CreateLessonAsync(sectionId, createLessonDto, cancellationToken);
-                return CreatedAtAction(nameof(GetLessonById), new { courseId, sectionId, lessonId = lesson.Id }, lesson);
-            }
-            catch (ServiceNotFoundException ex)
-            {
-                return NotFoundProblem(ex);
-            }
-            catch (ServiceAuthorizationException ex)
-            {
-                return ForbiddenProblem(ex);
-            }
-            catch (ServiceBadRequestException ex)
-            {
-                return BadRequestProblem(ex);
-            }
+            var lesson = await _lessonService.CreateLessonAsync(sectionId, createLessonDto, cancellationToken);
+            return CreatedAtAction(nameof(GetLessonById), new { courseId, sectionId, lessonId = lesson.Id }, lesson);
         }
 
         [HttpPut("{lessonId:guid}")]
@@ -81,23 +52,8 @@ namespace NovillusPath.API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateLesson([FromRoute] Guid courseId, [FromRoute] Guid sectionId, [FromRoute] Guid lessonId, [FromBody] UpdateLessonDto updateLessonDto, CancellationToken cancellationToken)
         {
-            try
-            {
-                await _lessonService.UpdateLessonAsync(sectionId, lessonId, updateLessonDto, cancellationToken);
-                return NoContent();
-            }
-            catch (ServiceNotFoundException ex)
-            {
-                return NotFoundProblem(ex);
-            }
-            catch (ServiceAuthorizationException ex)
-            {
-                return ForbiddenProblem(ex);
-            }
-            catch (ServiceBadRequestException ex)
-            {
-                return BadRequestProblem(ex);
-            }
+            await _lessonService.UpdateLessonAsync(sectionId, lessonId, updateLessonDto, cancellationToken);
+            return NoContent();
         }
 
         [HttpPatch("{lessonId:guid}/status")]
@@ -108,23 +64,8 @@ namespace NovillusPath.API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateLessonStatus([FromRoute] Guid courseId, [FromRoute] Guid sectionId, [FromRoute] Guid lessonId, [FromBody] UpdateLessonStatusDto updateLessonStatusDto, CancellationToken cancellationToken)
         {
-            try
-            {
-                await _lessonService.UpdateLessonStatusAsync(sectionId, lessonId, updateLessonStatusDto, cancellationToken);
-                return NoContent();
-            }
-            catch (ServiceNotFoundException ex)
-            {
-                return NotFoundProblem(ex);
-            }
-            catch (ServiceAuthorizationException ex)
-            {
-                return ForbiddenProblem(ex);
-            }
-            catch (ServiceBadRequestException ex)
-            {
-                return BadRequestProblem(ex);
-            }
+            await _lessonService.UpdateLessonStatusAsync(sectionId, lessonId, updateLessonStatusDto, cancellationToken);
+            return NoContent();
         }
 
         [HttpDelete("{lessonId:guid}")]
@@ -134,19 +75,8 @@ namespace NovillusPath.API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> DeleteLesson([FromRoute] Guid courseId, [FromRoute] Guid sectionId, [FromRoute] Guid lessonId, CancellationToken cancellationToken)
         {
-            try
-            {
-                await _lessonService.DeleteLessonAsync(sectionId, lessonId, cancellationToken);
-                return NoContent();
-            }
-            catch (ServiceNotFoundException ex)
-            {
-                return NotFoundProblem(ex);
-            }
-            catch (ServiceAuthorizationException ex)
-            {
-                return ForbiddenProblem(ex);
-            }
+            await _lessonService.DeleteLessonAsync(sectionId, lessonId, cancellationToken);
+            return NoContent();
         }
 
 

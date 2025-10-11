@@ -40,10 +40,6 @@ namespace NovillusPath.API.Controllers
                 await _enrollmentService.EnrollAsync(courseId, userIdToEnroll.Value, cancellationToken);
                 return NoContent();
             }
-            catch (ServiceNotFoundException ex)
-            {
-                return NotFoundProblem(ex);
-            }
             catch (ServiceAuthorizationException ex) // Thrown by EnrollmentService if its internal auth logic fails
             {
                 return ForbiddenProblem(ex);
@@ -71,19 +67,8 @@ namespace NovillusPath.API.Controllers
                 return Unauthorized(new ProblemDetails { Title = "Unauthorized", Detail = "User ID could not be determined.", Status = StatusCodes.Status401Unauthorized });
             }
 
-            try
-            {
-                await _enrollmentService.UnenrollAsync(courseId, userIdToUnenroll.Value, cancellationToken);
-                return NoContent();
-            }
-            catch (ServiceNotFoundException ex) // e.g., Course not found, or Enrollment not found
-            {
-                return NotFoundProblem(ex);
-            }
-            catch (ServiceAuthorizationException ex) // Thrown by EnrollmentService if its internal auth logic fails
-            {
-                return ForbiddenProblem(ex);
-            }
+            await _enrollmentService.UnenrollAsync(courseId, userIdToUnenroll.Value, cancellationToken);
+            return NoContent();
         }
     }
 }

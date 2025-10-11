@@ -17,15 +17,8 @@ namespace NovillusPath.API.Controllers
         //TODO: Just section 0 (Overview) can be viewed by unenrrolled users
         public async Task<ActionResult<IReadOnlyList<SectionDto>>> GetSections([FromRoute] Guid courseId, CancellationToken cancellationToken)
         {
-            try
-            {
-                var sectionsDto = await _sectionService.GetSectionsAsync(courseId, cancellationToken);
-                return Ok(sectionsDto);
-            }
-            catch (ServiceNotFoundException ex)
-            {
-                return NotFoundProblem(ex);
-            }
+            var sectionsDto = await _sectionService.GetSectionsAsync(courseId, cancellationToken);
+            return Ok(sectionsDto);
         }
 
         [HttpPost]
@@ -36,23 +29,8 @@ namespace NovillusPath.API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<SectionDto>> CreateSection([FromRoute] Guid courseId, [FromBody] CreateSectionDto createSectionDto, CancellationToken cancellationToken)
         {
-            try
-            {
-                var sectionDto = await _sectionService.CreateSectionAsync(courseId, createSectionDto, cancellationToken);
-                return CreatedAtAction(nameof(GetSectionById), new { courseId, sectionId = sectionDto.Id }, sectionDto);
-            }
-            catch (ServiceNotFoundException ex)
-            {
-                return NotFoundProblem(ex);
-            }
-            catch (ServiceAuthorizationException ex)
-            {
-                return ForbiddenProblem(ex);
-            }
-            catch (ServiceBadRequestException ex)
-            {
-                return BadRequestProblem(ex);
-            }
+            var sectionDto = await _sectionService.CreateSectionAsync(courseId, createSectionDto, cancellationToken);
+            return CreatedAtAction(nameof(GetSectionById), new { courseId, sectionId = sectionDto.Id }, sectionDto);
         }
 
         [HttpGet("{sectionId:guid}", Name = "GetSectionById")]
@@ -60,15 +38,8 @@ namespace NovillusPath.API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<SectionDto>> GetSectionById([FromRoute] Guid courseId, [FromRoute] Guid sectionId, CancellationToken cancellationToken)
         {
-            try
-            {
-                var sectionDto = await _sectionService.GetSectionByIdAsync(courseId, sectionId, cancellationToken);
-                return Ok(sectionDto);
-            }
-            catch (ServiceNotFoundException ex)
-            {
-                return NotFoundProblem(ex);
-            }
+            var sectionDto = await _sectionService.GetSectionByIdAsync(courseId, sectionId, cancellationToken);
+            return Ok(sectionDto);
         }
 
         [HttpPut("{sectionId:guid}")]
@@ -79,23 +50,8 @@ namespace NovillusPath.API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> UpdateSection([FromRoute] Guid courseId, [FromRoute] Guid sectionId, [FromBody] UpdateSectionDto updateSectionDto, CancellationToken cancellationToken)
         {
-            try
-            {
-                await _sectionService.UpdateSectionAsync(courseId, sectionId, updateSectionDto, cancellationToken);
-                return NoContent();
-            }
-            catch (ServiceNotFoundException ex)
-            {
-                return NotFoundProblem(ex);
-            }
-            catch (ServiceAuthorizationException ex)
-            {
-                return ForbiddenProblem(ex);
-            }
-            catch (ServiceBadRequestException ex)
-            {
-                return BadRequestProblem(ex);
-            }
+            await _sectionService.UpdateSectionAsync(courseId, sectionId, updateSectionDto, cancellationToken);
+            return NoContent();
         }
 
         [HttpDelete("{sectionId:guid}")]
@@ -105,19 +61,8 @@ namespace NovillusPath.API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> DeleteSection([FromRoute] Guid courseId, [FromRoute] Guid sectionId, CancellationToken cancellationToken)
         {
-            try
-            {
-                await _sectionService.DeleteSectionAsync(courseId, sectionId, cancellationToken);
-                return NoContent();
-            }
-            catch (ServiceNotFoundException ex)
-            {
-                return NotFoundProblem(ex);
-            }
-            catch (ServiceAuthorizationException ex)
-            {
-                return ForbiddenProblem(ex);
-            }
+            await _sectionService.DeleteSectionAsync(courseId, sectionId, cancellationToken);
+            return NoContent();
         }
 
         [HttpPatch("{sectionId:guid}/status")]
@@ -128,23 +73,8 @@ namespace NovillusPath.API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateSectionStatus([FromRoute] Guid courseId, [FromRoute] Guid sectionId, [FromBody] UpdateSectionStatusDto updateSectionStatusDto, CancellationToken cancellationToken)
         {
-            try
-            {
-                await _sectionService.UpdateSectionStatusAsync(courseId, sectionId, updateSectionStatusDto, cancellationToken);
-                return NoContent();
-            }
-            catch (ServiceNotFoundException ex)
-            {
-                return NotFoundProblem(ex);
-            }
-            catch (ServiceAuthorizationException ex)
-            {
-                return ForbiddenProblem(ex);
-            }
-            catch (ServiceBadRequestException ex)
-            {
-                return BadRequestProblem(ex);
-            }
+            await _sectionService.UpdateSectionStatusAsync(courseId, sectionId, updateSectionStatusDto, cancellationToken);
+            return NoContent();
         }
     }
 }

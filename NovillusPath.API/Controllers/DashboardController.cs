@@ -19,15 +19,8 @@ namespace NovillusPath.API.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<StudentDashboardDto>> GetStudentDashboard(CancellationToken cancellationToken)
         {
-            try
-            {
-                var dashboard = await _dashboardService.GetStudentDashboardAsync(cancellationToken);
-                return Ok(dashboard);
-            }
-            catch (ServiceAuthorizationException ex)
-            {
-                return UnauthorizedProblem(ex);
-            }
+            var dashboard = await _dashboardService.GetStudentDashboardAsync(cancellationToken);
+            return Ok(dashboard);
         }
 
         [HttpGet("instructor")]
@@ -37,15 +30,8 @@ namespace NovillusPath.API.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<InstructorDashboardDto>> GetInstructorDashboard(CancellationToken cancellationToken)
         {
-            try
-            {
-                var dashboard = await _dashboardService.GetInstructorDashboardAsync(cancellationToken);
-                return Ok(dashboard);
-            }
-            catch (ServiceAuthorizationException ex)
-            {
-                return UnauthorizedProblem(ex);
-            }
+            var dashboard = await _dashboardService.GetInstructorDashboardAsync(cancellationToken);
+            return Ok(dashboard);
         }
     }
 }

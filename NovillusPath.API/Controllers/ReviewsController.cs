@@ -23,15 +23,8 @@ namespace NovillusPath.API.Controllers
             CancellationToken cancellationToken = default
             )
         {
-            try
-            {
-                var pagedResult = await _reviewService.GetPagedReviewsByCourseIdAsync(courseId, pageNumber, pageSize, cancellationToken);
-                return Ok(pagedResult);
-            }
-            catch (ServiceNotFoundException ex)
-            {
-                return NotFoundProblem(ex);
-            }
+            var pagedResult = await _reviewService.GetPagedReviewsByCourseIdAsync(courseId, pageNumber, pageSize, cancellationToken);
+            return Ok(pagedResult);
         }
 
         [HttpGet("{reviewId:guid}", Name = "GetReviewById")]
@@ -39,15 +32,8 @@ namespace NovillusPath.API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<ReviewDto>> GetReviewByIdAsync([FromRoute] Guid courseId, [FromRoute] Guid reviewId, CancellationToken cancellationToken)
         {
-            try
-            {
-                var reviewDto = await _reviewService.GetReviewByIdAsync(courseId, reviewId, cancellationToken);
-                return Ok(reviewDto);
-            }
-            catch (ServiceNotFoundException ex)
-            {
-                return NotFoundProblem(ex);
-            }
+            var reviewDto = await _reviewService.GetReviewByIdAsync(courseId, reviewId, cancellationToken);
+            return Ok(reviewDto);
         }
 
         [HttpPost]
@@ -58,23 +44,8 @@ namespace NovillusPath.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<ReviewDto>> CreateReviewAsync([FromRoute] Guid courseId, [FromBody] CreateReviewDto createReviewDto, CancellationToken cancellationToken)
         {
-            try
-            {
-                var reviewDto = await _reviewService.CreateReviewAsync(courseId, createReviewDto, cancellationToken);
-                return CreatedAtRoute("GetReviewById", new { courseId, reviewId = reviewDto.Id }, reviewDto);
-            }
-            catch (ServiceNotFoundException ex)
-            {
-                return NotFoundProblem(ex);
-            }
-            catch (ServiceAuthorizationException ex)
-            {
-                return ForbiddenProblem(ex);
-            }
-            catch (ServiceBadRequestException ex)
-            {
-                return BadRequestProblem(ex);
-            }
+            var reviewDto = await _reviewService.CreateReviewAsync(courseId, createReviewDto, cancellationToken);
+            return CreatedAtRoute("GetReviewById", new { courseId, reviewId = reviewDto.Id }, reviewDto);
         }
 
         [HttpPut("{reviewId:guid}")]
@@ -85,23 +56,8 @@ namespace NovillusPath.API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<ReviewDto>> UpdateReview([FromRoute] Guid courseId, [FromRoute] Guid reviewId, [FromBody] UpdateReviewDto updateReviewDto, CancellationToken cancellationToken)
         {
-            try
-            {
-                var updatedReview = await _reviewService.UpdateReviewAsync(courseId, reviewId, updateReviewDto, cancellationToken);
-                return Ok(updatedReview);
-            }
-            catch (ServiceNotFoundException ex)
-            {
-                return NotFoundProblem(ex);
-            }
-            catch (ServiceAuthorizationException ex)
-            {
-                return ForbiddenProblem(ex);
-            }
-            catch (ServiceBadRequestException ex)
-            {
-                return BadRequestProblem(ex);
-            }
+            var updatedReview = await _reviewService.UpdateReviewAsync(courseId, reviewId, updateReviewDto, cancellationToken);
+            return Ok(updatedReview);
         }
 
         [HttpDelete("{reviewId:guid}")]
@@ -111,23 +67,8 @@ namespace NovillusPath.API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteReview([FromRoute] Guid courseId, [FromRoute] Guid reviewId, CancellationToken cancellationToken)
         {
-            try
-            {
-                await _reviewService.DeleteReviewAsync(courseId, reviewId, cancellationToken);
-                return NoContent();
-            }
-            catch (ServiceNotFoundException ex)
-            {
-                return NotFoundProblem(ex);
-            }
-            catch (ServiceAuthorizationException ex)
-            {
-                return ForbiddenProblem(ex);
-            }
-            catch (ServiceBadRequestException ex)
-            {
-                return BadRequestProblem(ex);
-            }
+            await _reviewService.DeleteReviewAsync(courseId, reviewId, cancellationToken);
+            return NoContent();
         }
     }
 }

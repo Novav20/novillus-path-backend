@@ -28,15 +28,8 @@ public class CoursesController(ICourseService courseService) : BaseApiController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<CourseDto>> GetCourseById(Guid id, CancellationToken cancellationToken)
     {
-        try
-        {
-            var course = await _courseService.GetCourseByIdAsync(id, cancellationToken);
-            return Ok(course);
-        }
-        catch (ServiceNotFoundException ex)
-        {
-            return NotFoundProblem(ex);
-        }
+        var course = await _courseService.GetCourseByIdAsync(id, cancellationToken);
+        return Ok(course);
     }
 
     [HttpPost]
@@ -46,19 +39,8 @@ public class CoursesController(ICourseService courseService) : BaseApiController
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<CourseDto>> CreateCourse([FromBody] CreateCourseDto createCourseDto, CancellationToken cancellationToken)
     {
-        try
-        {
-            var course = await _courseService.CreateCourseAsync(createCourseDto, cancellationToken);
-            return CreatedAtAction(nameof(GetCourseById), new { id = course.Id }, course);
-        }
-        catch (ServiceAuthorizationException ex)
-        {
-            return UnauthorizedProblem(ex);
-        }
-        catch (ServiceBadRequestException ex)
-        {
-            return BadRequestProblem(ex);
-        }
+        var course = await _courseService.CreateCourseAsync(createCourseDto, cancellationToken);
+        return CreatedAtAction(nameof(GetCourseById), new { id = course.Id }, course);
     }
 
     [HttpPut("{id:guid}")]
@@ -69,23 +51,8 @@ public class CoursesController(ICourseService courseService) : BaseApiController
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> UpdateCourse(Guid id, [FromBody] UpdateCourseDto updateCourseDto, CancellationToken cancellationToken)
     {
-        try
-        {
-            await _courseService.UpdateCourseAsync(id, updateCourseDto, cancellationToken);
-            return NoContent();
-        }
-        catch (ServiceNotFoundException ex)
-        {
-            return NotFoundProblem(ex);
-        }
-        catch (ServiceAuthorizationException ex)
-        {
-            return ForbiddenProblem(ex);
-        }
-        catch (ServiceBadRequestException ex)
-        {
-            return BadRequestProblem(ex);
-        }
+        await _courseService.UpdateCourseAsync(id, updateCourseDto, cancellationToken);
+        return NoContent();
     }
 
     [HttpDelete("{id:guid}")]
@@ -95,19 +62,8 @@ public class CoursesController(ICourseService courseService) : BaseApiController
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> DeleteCourse(Guid id, CancellationToken cancellationToken)
     {
-        try
-        {
-            await _courseService.DeleteCourseAsync(id, cancellationToken);
-            return NoContent();
-        }
-        catch (ServiceNotFoundException ex)
-        {
-            return NotFoundProblem(ex);
-        }
-        catch (ServiceAuthorizationException ex)
-        {
-            return ForbiddenProblem(ex);
-        }
+        await _courseService.DeleteCourseAsync(id, cancellationToken);
+        return NoContent();
     }
 
     [HttpPatch("{id:guid}/status")]
@@ -118,22 +74,7 @@ public class CoursesController(ICourseService courseService) : BaseApiController
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> UpdateCourseStatus(Guid id, [FromBody] UpdateCourseStatusDto updateCourseStatusDto, CancellationToken cancellationToken)
     {
-        try
-        {
-            await _courseService.UpdateCourseStatusAsync(id, updateCourseStatusDto, cancellationToken);
-            return NoContent();
-        }
-        catch (ServiceNotFoundException ex)
-        {
-            return NotFoundProblem(ex);
-        }
-        catch (ServiceAuthorizationException ex)
-        {
-            return ForbiddenProblem(ex);
-        }
-        catch (ServiceBadRequestException ex)
-        {
-            return BadRequestProblem(ex);
-        }
+        await _courseService.UpdateCourseStatusAsync(id, updateCourseStatusDto, cancellationToken);
+        return NoContent();
     }
 }
