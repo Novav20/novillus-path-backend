@@ -22,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="../NovillusPath.Application/NovillusPath.Application.csproj" />
     <ProjectReference Include="../NovillusPath.Infrastructure/NovillusPath.Infrastructure.csproj" />
   </ItemGroup>
 
