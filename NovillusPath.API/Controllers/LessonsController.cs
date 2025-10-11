@@ -7,6 +7,9 @@ using NovillusPath.Application.Constants;
 
 namespace NovillusPath.API.Controllers
 {
+    /// <summary>
+    /// API controller for managing lessons within sections of a course.
+    /// </summary>
     [Route("api/courses/{courseId:guid}/sections/{sectionId:guid}/lessons")]
     [ApiController]
     [Produces(MediaTypeNames.Application.Json)]
@@ -14,6 +17,13 @@ namespace NovillusPath.API.Controllers
     {
         private readonly ILessonService _lessonService = lessonService;
 
+        /// <summary>
+        /// Retrieves a list of lessons for a specific section.
+        /// </summary>
+        /// <param name="courseId">The ID of the course.</param>
+        /// <param name="sectionId">The ID of the section.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>A list of LessonDto.</returns>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IReadOnlyList<LessonDto>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -23,6 +33,14 @@ namespace NovillusPath.API.Controllers
             return Ok(lessons);
         }
 
+        /// <summary>
+        /// Retrieves a specific lesson by its ID within a section.
+        /// </summary>
+        /// <param name="courseId">The ID of the course.</param>
+        /// <param name="sectionId">The ID of the section.</param>
+        /// <param name="lessonId">The ID of the lesson.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>The LessonDto.</returns>
         [HttpGet("{lessonId:guid}", Name = "GetLessonById")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(LessonDto))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -32,6 +50,14 @@ namespace NovillusPath.API.Controllers
             return Ok(lesson);
         }
 
+        /// <summary>
+        /// Creates a new lesson within a specific section.
+        /// </summary>
+        /// <param name="courseId">The ID of the course.</param>
+        /// <param name="sectionId">The ID of the section.</param>
+        /// <param name="createLessonDto">The lesson data.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>The created LessonDto.</returns>
         [HttpPost]
         [Authorize(Roles = Roles.Admin + "," + Roles.Instructor)]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(LessonDto))]
@@ -44,6 +70,15 @@ namespace NovillusPath.API.Controllers
             return CreatedAtAction(nameof(GetLessonById), new { courseId, sectionId, lessonId = lesson.Id }, lesson);
         }
 
+        /// <summary>
+        /// Updates an existing lesson within a specific section.
+        /// </summary>
+        /// <param name="courseId">The ID of the course.</param>
+        /// <param name="sectionId">The ID of the section.</param>
+        /// <param name="lessonId">The ID of the lesson to update.</param>
+        /// <param name="updateLessonDto">The updated lesson data.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>No content.</returns>
         [HttpPut("{lessonId:guid}")]
         [Authorize(Roles = Roles.Admin + "," + Roles.Instructor)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -56,6 +91,15 @@ namespace NovillusPath.API.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Updates the status of a lesson.
+        /// </summary>
+        /// <param name="courseId">The ID of the course.</param>
+        /// <param name="sectionId">The ID of the section.</param>
+        /// <param name="lessonId">The ID of the lesson.</param>
+        /// <param name="updateLessonStatusDto">The new status.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>No content.</returns>
         [HttpPatch("{lessonId:guid}/status")]
         [Authorize(Roles = Roles.Admin + "," + Roles.Instructor)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -68,6 +112,14 @@ namespace NovillusPath.API.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Deletes a lesson by its ID within a section.
+        /// </summary>
+        /// <param name="courseId">The ID of the course.</param>
+        /// <param name="sectionId">The ID of the section.</param>
+        /// <param name="lessonId">The ID of the lesson to delete.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>No content.</returns>
         [HttpDelete("{lessonId:guid}")]
         [Authorize(Roles = Roles.Admin + "," + Roles.Instructor)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]

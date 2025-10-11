@@ -4,12 +4,24 @@ using NovillusPath.Application.Interfaces.Identity;
 
 namespace NovillusPath.API.Controllers
 {
+    /// <summary>
+    /// API controller for user authentication (registration and login).
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class AuthController(IAuthService authService) : ControllerBase
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AuthController"/> class.
+        /// </summary>
         private readonly IAuthService _authService = authService;
 
+        /// <summary>
+        /// Registers a new user.
+        /// </summary>
+        /// <param name="registerUserDto">The registration data.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>A success message or validation errors.</returns>
         [HttpPost("register")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -28,6 +40,12 @@ namespace NovillusPath.API.Controllers
             return BadRequest(ModelState);
         }
 
+        /// <summary>
+        /// Logs in an existing user and returns a JWT token.
+        /// </summary>
+        /// <param name="loginUserDto">The login credentials.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>A JWT token on successful login, or an error message.</returns>
         [HttpPost("login")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(LoginResponseDto))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

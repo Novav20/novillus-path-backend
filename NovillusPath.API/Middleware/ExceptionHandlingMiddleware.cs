@@ -4,11 +4,18 @@ using NovillusPath.Application.Exceptions;
 
 namespace NovillusPath.API.Middleware;
 
+/// <summary>
+/// Middleware for global exception handling.
+/// </summary>
 public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
 {
     private readonly RequestDelegate _next = next;
     private readonly ILogger<ExceptionHandlingMiddleware> _logger = logger;
 
+    /// <summary>
+    /// Invokes the middleware to handle exceptions asynchronously.
+    /// </summary>
+    /// <param name="httpContext">The HttpContext for the current request.</param>
     public async Task InvokeAsync(HttpContext httpContext)
     {
         try
@@ -60,8 +67,17 @@ public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Exception
     }
 }
 
+/// <summary>
+/// Represents the details of an error returned by the API.
+/// </summary>
 public class ErrorDetails
 {
+    /// <summary>
+    /// The HTTP status code of the error.
+    /// </summary>
     public int StatusCode { get; set; }
+    /// <summary>
+    /// A descriptive message about the error.
+    /// </summary>
     public required string Message { get; set; }
 }

@@ -7,6 +7,9 @@ using NovillusPath.Application.Constants;
 
 namespace NovillusPath.API.Controllers
 {
+    /// <summary>
+    /// API controller for managing course enrollments.
+    /// </summary>
     [Route("api/courses/{courseId}")]
     [ApiController]
     [Produces("application/json")]
@@ -15,6 +18,12 @@ namespace NovillusPath.API.Controllers
         private readonly IEnrollmentService _enrollmentService = enrollmentService;
         private readonly ICurrentUserService _currentUserService = currentUserService;
 
+        /// <summary>
+        /// Enrolls the current user in a specified course.
+        /// </summary>
+        /// <param name="courseId">The ID of the course to enroll in.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>No content.</returns>
         [HttpPost("enroll")]
         [Authorize(Roles = Roles.Student + "," + Roles.Admin)] 
         [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -33,24 +42,19 @@ namespace NovillusPath.API.Controllers
                 return Unauthorized(new ProblemDetails { Title = "Unauthorized", Detail = "User ID could not be determined.", Status = StatusCodes.Status401Unauthorized });
             }
 
-            try
-            {
-                // The service method will use its own ICurrentUserService to validate if the
-                // authenticated user (represented by _currentUserService in the service) can
-                // enroll the target userIdToEnroll.Value.
-                await _enrollmentService.EnrollAsync(courseId, userIdToEnroll.Value, cancellationToken);
-                return NoContent();
-            }
-            catch (ServiceAuthorizationException ex) // Thrown by EnrollmentService if its internal auth logic fails
-            {
-                return ForbiddenProblem(ex);
-            }
-            catch (ServiceBadRequestException ex) // e.g., already enrolled, course not published
-            {
-                return BadRequestProblem(ex);
-            }
+            // The service method will use its own ICurrentUserService to validate if the
+            // authenticated user (represented by _currentUserService in the service) can
+            // enroll the target userIdToEnroll.Value.
+            await _enrollmentService.EnrollAsync(courseId, userIdToEnroll.Value, cancellationToken);
+            return NoContent();
         }
 
+        /// <summary>
+        /// Unenrolls the current user from a specified course.
+        /// </summary>
+        /// <param name="courseId">The ID of the course to unenroll from.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>No content.</returns>
         [HttpDelete("unenroll")]
         [Authorize(Roles = Roles.Student + "," + Roles.Admin)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]

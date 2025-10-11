@@ -8,6 +8,9 @@ using NovillusPath.Application.Constants;
 
 namespace NovillusPath.API.Controllers;
 
+/// <summary>
+/// API controller for managing courses.
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 [Produces(MediaTypeNames.Application.Json)]
@@ -15,6 +18,12 @@ public class CoursesController(ICourseService courseService) : BaseApiController
 {
     private readonly ICourseService _courseService = courseService;
 
+    /// <summary>
+    /// Retrieves a paginated list of courses based on search parameters.
+    /// </summary>
+    /// <param name="searchParams">Search, filter, and pagination parameters.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>A paginated list of CourseDto.</returns>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PagedResult<CourseDto>))]
     public async Task<ActionResult<PagedResult<CourseDto>>> GetCourses([FromQuery] CourseSearchParamsDto searchParams, CancellationToken cancellationToken)
@@ -23,6 +32,12 @@ public class CoursesController(ICourseService courseService) : BaseApiController
         return Ok(courses);
     }
 
+    /// <summary>
+    /// Retrieves a course by its ID.
+    /// </summary>
+    /// <param name="id">The ID of the course.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>The CourseDto.</returns>
     [HttpGet("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CourseDto))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -32,6 +47,12 @@ public class CoursesController(ICourseService courseService) : BaseApiController
         return Ok(course);
     }
 
+    /// <summary>
+    /// Creates a new course.
+    /// </summary>
+    /// <param name="createCourseDto">The course data.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>The created CourseDto.</returns>
     [HttpPost]
     [Authorize(Roles = Roles.Instructor + "," + Roles.Admin)]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(CourseDto))]
@@ -43,6 +64,13 @@ public class CoursesController(ICourseService courseService) : BaseApiController
         return CreatedAtAction(nameof(GetCourseById), new { id = course.Id }, course);
     }
 
+    /// <summary>
+    /// Updates an existing course.
+    /// </summary>
+    /// <param name="id">The ID of the course to update.</param>
+    /// <param name="updateCourseDto">The updated course data.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>No content.</returns>
     [HttpPut("{id:guid}")]
     [Authorize(Roles = Roles.Instructor + "," + Roles.Admin)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -55,6 +83,12 @@ public class CoursesController(ICourseService courseService) : BaseApiController
         return NoContent();
     }
 
+    /// <summary>
+    /// Deletes a course by its ID.
+    /// </summary>
+    /// <param name="id">The ID of the course to delete.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>No content.</returns>
     [HttpDelete("{id:guid}")]
     [Authorize(Roles = Roles.Instructor + "," + Roles.Admin)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -66,6 +100,13 @@ public class CoursesController(ICourseService courseService) : BaseApiController
         return NoContent();
     }
 
+    /// <summary>
+    /// Updates the status of a course.
+    /// </summary>
+    /// <param name="id">The ID of the course.</param>
+    /// <param name="updateCourseStatusDto">The new status.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>No content.</returns>
     [HttpPatch("{id:guid}/status")]
     [Authorize(Roles = Roles.Instructor + "," + Roles.Admin)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]

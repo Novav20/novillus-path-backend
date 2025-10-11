@@ -7,8 +7,17 @@ using NovillusPath.Infrastructure.Persistence;
 
 namespace NovillusPath.API.Extensions;
 
+/// <summary>
+/// Extension methods for registering Identity-related services.
+/// </summary>
 public static class IdentityServiceRegistration
 {
+    /// <summary>
+    /// Adds Identity-related services to the service collection.
+    /// </summary>
+    /// <param name="services">The IServiceCollection to add the services to.</param>
+    /// <param name="configuration">The IConfiguration instance.</param>
+    /// <returns>The updated IServiceCollection.</returns>
     public static IServiceCollection AddIdentityServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>

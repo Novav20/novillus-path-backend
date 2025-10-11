@@ -20,6 +20,7 @@ public static class ApplicationServiceRegistration
         services.AddScoped<IEnrollmentService, EnrollmentService>();
         services.AddScoped<IReviewService, ReviewService>();
         services.AddScoped<IDashboardService, DashboardService>();
+        services.AddScoped<ICategoryService, CategoryService>();
         return services;
     }
 }

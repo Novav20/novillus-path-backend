@@ -7,6 +7,8 @@ using NovillusPath.Domain.Entities;
 using NovillusPath.Infrastructure.Extensions;
 using NovillusPath.Infrastructure.Persistence;
 using NovillusPath.Infrastructure.Persistence.Seed;
+using System.Reflection;
+using System.IO;
 using Serilog;
 
 Log.Logger = new LoggerConfiguration()
@@ -40,7 +42,10 @@ builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddIdentityServices(builder.Configuration);
 
 builder.Services.AddControllers();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"{Assembly.GetExecutingAssembly().GetName().Name}.xml"));
+});
 
 
 var app = builder.Build();

@@ -7,6 +7,9 @@ using NovillusPath.Application.Constants;
 
 namespace NovillusPath.API.Controllers
 {
+    /// <summary>
+    /// API controller for user-specific operations.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class UsersController(IEnrollmentService enrollmentService, ICurrentUserService currentUserService) : BaseApiController
@@ -14,6 +17,11 @@ namespace NovillusPath.API.Controllers
         private readonly IEnrollmentService _enrollmentService = enrollmentService;
         private readonly ICurrentUserService _currentUserService = currentUserService;
 
+        /// <summary>
+        /// Retrieves a list of courses the current user is enrolled in.
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>A list of CourseDto representing enrolled courses.</returns>
         [HttpGet("me/my-learning")]
         [Authorize(Roles = Roles.Student)]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IReadOnlyList<CourseDto>))]

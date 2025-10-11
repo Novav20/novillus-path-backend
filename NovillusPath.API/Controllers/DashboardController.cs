@@ -6,12 +6,20 @@ using NovillusPath.Application.Constants;
 
 namespace NovillusPath.API.Controllers
 {
+    /// <summary>
+    /// API controller for retrieving dashboard information for students and instructors.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class DashboardController(IDashboardService dashboardService) : BaseApiController
     {
         private readonly IDashboardService _dashboardService = dashboardService;
 
+        /// <summary>
+        /// Retrieves the dashboard summary for the currently authenticated student.
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>A StudentDashboardDto containing enrolled courses and progress.</returns>
         [HttpGet("student")]
         [Authorize(Roles = Roles.Student)]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(StudentDashboardDto))]
@@ -23,6 +31,11 @@ namespace NovillusPath.API.Controllers
             return Ok(dashboard);
         }
 
+        /// <summary>
+        /// Retrieves the dashboard summary for the currently authenticated instructor.
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>An InstructorDashboardDto containing created courses and statistics.</returns>
         [HttpGet("instructor")]
         [Authorize(Roles = Roles.Instructor)]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(InstructorDashboardDto))]

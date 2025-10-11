@@ -5,12 +5,21 @@ using NovillusPath.Application.Interfaces.Services;
 using NovillusPath.Application.Constants;
 namespace NovillusPath.API.Controllers
 {
+    /// <summary>
+    /// API controller for managing sections within a course.
+    /// </summary>
     [Route("api/courses/{courseId:guid}/sections")]
     [ApiController]
     public class SectionsController(ISectionService sectionService) : BaseApiController
     {
         private readonly ISectionService _sectionService = sectionService; 
 
+        /// <summary>
+        /// Retrieves a list of sections for a specific course.
+        /// </summary>
+        /// <param name="courseId">The ID of the course.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>A list of SectionDto.</returns>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -21,6 +30,13 @@ namespace NovillusPath.API.Controllers
             return Ok(sectionsDto);
         }
 
+        /// <summary>
+        /// Creates a new section within a specific course.
+        /// </summary>
+        /// <param name="courseId">The ID of the course.</param>
+        /// <param name="createSectionDto">The section data.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>The created SectionDto.</returns>
         [HttpPost]
         [Authorize(Roles = Roles.Admin + "," + Roles.Instructor)]
         [ProducesResponseType(StatusCodes.Status201Created)]
@@ -33,6 +49,13 @@ namespace NovillusPath.API.Controllers
             return CreatedAtAction(nameof(GetSectionById), new { courseId, sectionId = sectionDto.Id }, sectionDto);
         }
 
+        /// <summary>
+        /// Retrieves a specific section by its ID within a course.
+        /// </summary>
+        /// <param name="courseId">The ID of the course.</param>
+        /// <param name="sectionId">The ID of the section.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>The SectionDto.</returns>
         [HttpGet("{sectionId:guid}", Name = "GetSectionById")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -42,6 +65,14 @@ namespace NovillusPath.API.Controllers
             return Ok(sectionDto);
         }
 
+        /// <summary>
+        /// Updates an existing section within a specific course.
+        /// </summary>
+        /// <param name="courseId">The ID of the course.</param>
+        /// <param name="sectionId">The ID of the section to update.</param>
+        /// <param name="updateSectionDto">The updated section data.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>No content.</returns>
         [HttpPut("{sectionId:guid}")]
         [Authorize(Roles = Roles.Admin + "," + Roles.Instructor)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -54,6 +85,13 @@ namespace NovillusPath.API.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Deletes a section by its ID within a course.
+        /// </summary>
+        /// <param name="courseId">The ID of the course.</param>
+        /// <param name="sectionId">The ID of the section to delete.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>No content.</returns>
         [HttpDelete("{sectionId:guid}")]
         [Authorize(Roles = Roles.Admin + "," + Roles.Instructor)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -65,6 +103,14 @@ namespace NovillusPath.API.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Updates the status of a section.
+        /// </summary>
+        /// <param name="courseId">The ID of the course.</param>
+        /// <param name="sectionId">The ID of the section.</param>
+        /// <param name="updateSectionStatusDto">The new status.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>No content.</returns>
         [HttpPatch("{sectionId:guid}/status")]
         [Authorize(Roles = Roles.Admin + "," + Roles.Instructor)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]

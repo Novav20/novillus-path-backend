@@ -7,12 +7,23 @@ using NovillusPath.Application.Constants;
 
 namespace NovillusPath.API.Controllers
 {
+    /// <summary>
+    /// API controller for managing course reviews.
+    /// </summary>
     [Route("api/courses/{courseId:guid}/[controller]")]
     [ApiController]
     public class ReviewsController(IReviewService reviewService) : BaseApiController
     {
         private readonly IReviewService _reviewService = reviewService;
 
+        /// <summary>
+        /// Retrieves a paginated list of reviews for a specific course.
+        /// </summary>
+        /// <param name="courseId">The ID of the course.</param>
+        /// <param name="pageNumber">The page number.</param>
+        /// <param name="pageSize">The page size.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>A paginated list of ReviewDto.</returns>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PagedResult<ReviewDto>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -27,6 +38,13 @@ namespace NovillusPath.API.Controllers
             return Ok(pagedResult);
         }
 
+        /// <summary>
+        /// Retrieves a specific review by its ID within a course.
+        /// </summary>
+        /// <param name="courseId">The ID of the course.</param>
+        /// <param name="reviewId">The ID of the review.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>The ReviewDto.</returns>
         [HttpGet("{reviewId:guid}", Name = "GetReviewById")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ReviewDto))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -36,6 +54,13 @@ namespace NovillusPath.API.Controllers
             return Ok(reviewDto);
         }
 
+        /// <summary>
+        /// Creates a new review for a specific course.
+        /// </summary>
+        /// <param name="courseId">The ID of the course.</param>
+        /// <param name="createReviewDto">The review data.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>The created ReviewDto.</returns>
         [HttpPost]
         [Authorize(Roles = Roles.Student)]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(ReviewDto))]
@@ -48,6 +73,14 @@ namespace NovillusPath.API.Controllers
             return CreatedAtRoute("GetReviewById", new { courseId, reviewId = reviewDto.Id }, reviewDto);
         }
 
+        /// <summary>
+        /// Updates an existing review.
+        /// </summary>
+        /// <param name="courseId">The ID of the course.</param>
+        /// <param name="reviewId">The ID of the review to update.</param>
+        /// <param name="updateReviewDto">The updated review data.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>The updated ReviewDto.</returns>
         [HttpPut("{reviewId:guid}")]
         [Authorize(Roles = Roles.Admin + "," + Roles.Student)]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ReviewDto))]
@@ -60,6 +93,13 @@ namespace NovillusPath.API.Controllers
             return Ok(updatedReview);
         }
 
+        /// <summary>
+        /// Deletes a review by its ID within a course.
+        /// </summary>
+        /// <param name="courseId">The ID of the course.</param>
+        /// <param name="reviewId">The ID of the review to delete.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>No content.</returns>
         [HttpDelete("{reviewId:guid}")]
         [Authorize(Roles = Roles.Admin + "," + Roles.Student)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]

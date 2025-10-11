@@ -1,53 +1,71 @@
-using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NovillusPath.Application.DTOs.Category;
-using NovillusPath.Application.Interfaces.Persistence;
-using NovillusPath.Domain.Entities;
+using NovillusPath.Application.Interfaces.Services;
 using NovillusPath.Application.Constants;
 
 namespace NovillusPath.API.Controllers
 {
+    /// <summary>
+    /// API controller for managing categories.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
-    public class CategoriesController(IUnitOfWork unitOfWork, IMapper mapper) : ControllerBase
+    public class CategoriesController(ICategoryService categoryService) : BaseApiController
     {
-        private readonly IUnitOfWork _unitOfWork = unitOfWork;
-        private readonly IMapper _mapper = mapper;
+        private readonly ICategoryService _categoryService = categoryService;
 
+        /// <summary>
+        /// Retrieves a list of all categories.
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>A list of CategoryDto.</returns>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<IReadOnlyList<CategoryDto>>> GetCategories(CancellationToken cancellationToken)
         {
-            var categories = await _unitOfWork.CategoryRepository.ListAllAsync(cancellationToken);
-            var categoriesDto = _mapper.Map<IReadOnlyList<CategoryDto>>(categories);
+            var categoriesDto = await _categoryService.GetCategoriesAsync(cancellationToken);
             return Ok(categoriesDto);
         }
 
+        /// <summary>
+        /// Retrieves a category by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the category.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>The CategoryDto.</returns>
         [HttpGet("{id:guid}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<CategoryDto>> GetCategoryById(Guid id, CancellationToken cancellationToken)
         {
-            var category = await _unitOfWork.CategoryRepository.GetByIdAsync(id, cancellationToken);
-            if (category == null) return NotFound($"Category with ID {id} not found.");
-            var categoryDto = _mapper.Map<CategoryDto>(category);
+            var categoryDto = await _categoryService.GetCategoryByIdAsync(id, cancellationToken);
             return Ok(categoryDto);
         }
 
+        /// <summary>
+        /// Creates a new category.
+        /// </summary>
+        /// <param name="createCategoryDto">The category data.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>The created CategoryDto.</returns>
         [HttpPost]
         [Authorize(Roles = Roles.Admin)]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<CategoryDto>> CreateCategory([FromBody] CreateCategoryDto createCategoryDto, CancellationToken cancellationToken)
         {
-            var categoryToCreate = _mapper.Map<Category>(createCategoryDto);
-            await _unitOfWork.CategoryRepository.AddAsync(categoryToCreate, cancellationToken);
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
-            var categoryDto = _mapper.Map<CategoryDto>(categoryToCreate);
+            var categoryDto = await _categoryService.CreateCategoryAsync(createCategoryDto, cancellationToken);
             return CreatedAtAction(nameof(GetCategoryById), new { id = categoryDto.Id }, categoryDto);
         }
 
+        /// <summary>
+        /// Updates an existing category.
+        /// </summary>
+        /// <param name="id">The ID of the category to update.</param>
+        /// <param name="updateCategoryDto">The updated category data.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>No content.</returns>
         [HttpPut("{id:guid}")]
         [Authorize(Roles = Roles.Admin)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -55,24 +73,23 @@ namespace NovillusPath.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult> UpdateCategory(Guid id, [FromBody] UpdateCategoryDto updateCategoryDto, CancellationToken cancellationToken)
         {
-            var category = await _unitOfWork.CategoryRepository.GetByIdAsync(id, cancellationToken);
-            if (category == null) return NotFound($"Category with ID {id} not found.");
-            _mapper.Map(updateCategoryDto, category);
-            category.UpdatedAt = DateTime.UtcNow;
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _categoryService.UpdateCategoryAsync(id, updateCategoryDto, cancellationToken);
             return NoContent();
         }
 
+        /// <summary>
+        /// Deletes a category by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the category to delete.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>No content.</returns>
         [HttpDelete("{id:guid}")]
         [Authorize(Roles = Roles.Admin)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> DeleteCategory(Guid id, CancellationToken cancellationToken)
         {
-            var category = await _unitOfWork.CategoryRepository.GetByIdAsync(id, cancellationToken);
-            if (category == null) return NotFound($"Category with ID {id} not found.");
-            await _unitOfWork.CategoryRepository.DeleteAsync(category, cancellationToken);
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _categoryService.DeleteCategoryAsync(id, cancellationToken);
             return NoContent();
         }
 
