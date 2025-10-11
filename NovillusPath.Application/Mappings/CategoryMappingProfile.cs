@@ -13,6 +13,6 @@ public class CategoryMappingProfile : Profile
         CreateMap<UpdateCategoryDto, Category>()
             .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
 
-        CreateMap<CategoryListItemDto, CategoryDto>();
+        
     }
 }
