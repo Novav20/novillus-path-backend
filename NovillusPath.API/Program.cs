@@ -1,13 +1,22 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using NovillusPath.API.Extensions;
+using NovillusPath.API.Middleware;
 using NovillusPath.Application.Extensions;
 using NovillusPath.Domain.Entities;
 using NovillusPath.Infrastructure.Extensions;
 using NovillusPath.Infrastructure.Persistence;
 using NovillusPath.Infrastructure.Persistence.Seed;
+using Serilog;
+
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog();
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 builder.Services.AddCors(options =>
@@ -36,6 +45,7 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 using (var scope = app.Services.CreateScope())
 {
