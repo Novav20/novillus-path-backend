@@ -9,6 +9,7 @@ using NovillusPath.Application.Interfaces.Persistence;
 using NovillusPath.Application.Interfaces.Services;
 using NovillusPath.Domain.Entities;
 using NovillusPath.Domain.Enums;
+using NovillusPath.Application.Constants;
 
 namespace NovillusPath.Application.Services;
 
@@ -50,11 +51,11 @@ public class CourseService(IUnitOfWork unitOfWork, IMapper mapper, ICurrentUserS
         var course = await _unitOfWork.CourseRepository.GetFullCourseByIdAsync(id, cancellationToken)
             ?? throw new ServiceNotFoundException($"Course with ID {id} not found.");
         var currentUserId = _currentUserService.UserId;
-        bool isAdmin = _currentUserService.IsInRole("Admin");
-        bool isInstructor = _currentUserService.IsInRole("Instructor");
+        bool isAdmin = _currentUserService.IsInRole(Roles.Admin);
+        bool isInstructor = _currentUserService.IsInRole(Roles.Instructor);
         if (!VisibilityHelper.CanUserViewCourse(course, _currentUserService))
         {
-            throw new ServiceNotFoundException($"Course with ID {id} not found.");
+            throw new ServiceAuthorizationException($"You are not authorized to view course with ID {id}.");
         }
         bool isPublicOrStudentView = !isAdmin && !(isInstructor && course.InstructorId == currentUserId);
         if (isPublicOrStudentView)
