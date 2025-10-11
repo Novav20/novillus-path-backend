@@ -2,9 +2,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NovillusPath.Application.DTOs.Common;
 using NovillusPath.Application.DTOs.Course;
-using NovillusPath.Application.Exceptions;
 using NovillusPath.Application.Interfaces.Services;
 using System.Net.Mime;
+using NovillusPath.Application.Constants;
 
 namespace NovillusPath.API.Controllers;
 
@@ -33,7 +33,7 @@ public class CoursesController(ICourseService courseService) : BaseApiController
     }
 
     [HttpPost]
-    [Authorize(Roles = "Instructor,Admin")]
+    [Authorize(Roles = Roles.Instructor + "," + Roles.Admin)]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(CourseDto))]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -44,7 +44,7 @@ public class CoursesController(ICourseService courseService) : BaseApiController
     }
 
     [HttpPut("{id:guid}")]
-    [Authorize(Roles = "Instructor,Admin")]
+    [Authorize(Roles = Roles.Instructor + "," + Roles.Admin)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -56,7 +56,7 @@ public class CoursesController(ICourseService courseService) : BaseApiController
     }
 
     [HttpDelete("{id:guid}")]
-    [Authorize(Roles = "Instructor,Admin")]
+    [Authorize(Roles = Roles.Instructor + "," + Roles.Admin)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -67,7 +67,7 @@ public class CoursesController(ICourseService courseService) : BaseApiController
     }
 
     [HttpPatch("{id:guid}/status")]
-    [Authorize(Roles = "Instructor,Admin")]
+    [Authorize(Roles = Roles.Instructor + "," + Roles.Admin)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

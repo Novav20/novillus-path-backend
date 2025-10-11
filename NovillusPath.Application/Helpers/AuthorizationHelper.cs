@@ -1,11 +1,12 @@
 using NovillusPath.Application.Interfaces.Common;
+using NovillusPath.Application.Constants;
 
 namespace NovillusPath.Application.Helpers;
 
 public static class AuthorizationHelper
 {
-    public static bool IsAdmin(ICurrentUserService user) => user.IsInRole("Admin");
-    public static bool IsStudent(ICurrentUserService user) => user.IsInRole("Student");
+    public static bool IsAdmin(ICurrentUserService user) => user.IsInRole(Roles.Admin);
+    public static bool IsStudent(ICurrentUserService user) => user.IsInRole(Roles.Student);
     public static bool IsOwner(Guid? userId, Guid ownerId) => userId.HasValue && userId.Value == ownerId;
     public static bool IsCurrentUserTheTargetUser(ICurrentUserService user, Guid targetUserId) =>
         user.UserId.HasValue && user.UserId.Value == targetUserId;

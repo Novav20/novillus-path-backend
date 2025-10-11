@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NovillusPath.Application.DTOs.Dashboard;
-using NovillusPath.Application.Exceptions;
 using NovillusPath.Application.Interfaces.Services;
+using NovillusPath.Application.Constants;
 
 namespace NovillusPath.API.Controllers
 {
@@ -13,7 +13,7 @@ namespace NovillusPath.API.Controllers
         private readonly IDashboardService _dashboardService = dashboardService;
 
         [HttpGet("student")]
-        [Authorize(Roles = "Student")]
+        [Authorize(Roles = Roles.Student)]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(StudentDashboardDto))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -24,7 +24,7 @@ namespace NovillusPath.API.Controllers
         }
 
         [HttpGet("instructor")]
-        [Authorize(Roles = "Instructor")]
+        [Authorize(Roles = Roles.Instructor)]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(InstructorDashboardDto))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]

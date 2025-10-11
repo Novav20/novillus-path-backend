@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using NovillusPath.Application.DTOs.Course;
 using NovillusPath.Application.Interfaces.Common;
 using NovillusPath.Application.Interfaces.Services;
+using NovillusPath.Application.Constants;
 
 namespace NovillusPath.API.Controllers
 {
@@ -14,7 +15,7 @@ namespace NovillusPath.API.Controllers
         private readonly ICurrentUserService _currentUserService = currentUserService;
 
         [HttpGet("me/my-learning")]
-        [Authorize(Roles = "Student")]
+        [Authorize(Roles = Roles.Student)]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IReadOnlyList<CourseDto>))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)] // If not authenticated
         [ProducesResponseType(StatusCodes.Status403Forbidden)]

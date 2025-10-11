@@ -2,8 +2,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NovillusPath.Application.DTOs.Common;
 using NovillusPath.Application.DTOs.Review;
-using NovillusPath.Application.Exceptions;
 using NovillusPath.Application.Interfaces.Services;
+using NovillusPath.Application.Constants;
 
 namespace NovillusPath.API.Controllers
 {
@@ -37,7 +37,7 @@ namespace NovillusPath.API.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Student")]
+        [Authorize(Roles = Roles.Student)]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(ReviewDto))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -49,7 +49,7 @@ namespace NovillusPath.API.Controllers
         }
 
         [HttpPut("{reviewId:guid}")]
-        [Authorize(Roles = "Admin,Student")]
+        [Authorize(Roles = Roles.Admin + "," + Roles.Student)]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ReviewDto))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -61,7 +61,7 @@ namespace NovillusPath.API.Controllers
         }
 
         [HttpDelete("{reviewId:guid}")]
-        [Authorize(Roles = "Admin,Student")]
+        [Authorize(Roles = Roles.Admin + "," + Roles.Student)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

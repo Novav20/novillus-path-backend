@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using NovillusPath.Application.Exceptions;
 using NovillusPath.Application.Interfaces.Common;
 using NovillusPath.Application.Interfaces.Services;
+using NovillusPath.Application.Constants;
 
 namespace NovillusPath.API.Controllers
 {
@@ -15,7 +16,7 @@ namespace NovillusPath.API.Controllers
         private readonly ICurrentUserService _currentUserService = currentUserService;
 
         [HttpPost("enroll")]
-        [Authorize(Roles = "Student,Admin")] 
+        [Authorize(Roles = Roles.Student + "," + Roles.Admin)] 
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)] 
         [ProducesResponseType(StatusCodes.Status401Unauthorized)] 
@@ -51,7 +52,7 @@ namespace NovillusPath.API.Controllers
         }
 
         [HttpDelete("unenroll")]
-        [Authorize(Roles = "Student,Admin")]
+        [Authorize(Roles = Roles.Student + "," + Roles.Admin)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]

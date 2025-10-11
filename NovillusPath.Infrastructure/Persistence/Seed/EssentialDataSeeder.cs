@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NovillusPath.Domain.Entities;
+using NovillusPath.Application.Constants;
 
 namespace NovillusPath.Infrastructure.Persistence.Seed;
 
@@ -14,7 +15,7 @@ public static class EssentialDataSeeder
         var configuration = serviceProvider.GetRequiredService<IConfiguration>();
 
         // Seed roles
-        string[] roles = ["Admin", "Instructor", "Student"];
+        string[] roles = [Roles.Admin, Roles.Instructor, Roles.Student];
         IdentityResult roleResult;
         foreach (var role in roles)
         {
@@ -57,7 +58,7 @@ public static class EssentialDataSeeder
                 {
                     throw new InvalidOperationException(createUserResult.Errors.First().Description);
                 }
-                var addRoleResult = await userManager.AddToRoleAsync(adminUser, "Admin");
+                var addRoleResult = await userManager.AddToRoleAsync(adminUser, Roles.Admin);
                 if (!addRoleResult.Succeeded)
                 {
                     throw new InvalidOperationException(addRoleResult.Errors.First().Description);
@@ -65,7 +66,7 @@ public static class EssentialDataSeeder
             }
             else if (!await userManager.IsInRoleAsync(adminUser, "Admin"))
             {
-                var addRoleResult = await userManager.AddToRoleAsync(adminUser, "Admin");
+                var addRoleResult = await userManager.AddToRoleAsync(adminUser, Roles.Admin);
                 if (!addRoleResult.Succeeded)
                 {
                     throw new InvalidOperationException(addRoleResult.Errors.First().Description);

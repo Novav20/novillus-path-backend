@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using NovillusPath.Application.DTOs.Category;
 using NovillusPath.Application.Interfaces.Persistence;
 using NovillusPath.Domain.Entities;
+using NovillusPath.Application.Constants;
 
 namespace NovillusPath.API.Controllers
 {
@@ -35,7 +36,7 @@ namespace NovillusPath.API.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = Roles.Admin)]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<CategoryDto>> CreateCategory([FromBody] CreateCategoryDto createCategoryDto, CancellationToken cancellationToken)
@@ -48,7 +49,7 @@ namespace NovillusPath.API.Controllers
         }
 
         [HttpPut("{id:guid}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = Roles.Admin)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -63,7 +64,7 @@ namespace NovillusPath.API.Controllers
         }
 
         [HttpDelete("{id:guid}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = Roles.Admin)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> DeleteCategory(Guid id, CancellationToken cancellationToken)

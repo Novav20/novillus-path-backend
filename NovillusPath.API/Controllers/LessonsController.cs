@@ -2,8 +2,8 @@ using System.Net.Mime;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NovillusPath.Application.DTOs.Lesson;
-using NovillusPath.Application.Exceptions;
 using NovillusPath.Application.Interfaces.Services;
+using NovillusPath.Application.Constants;
 
 namespace NovillusPath.API.Controllers
 {
@@ -33,7 +33,7 @@ namespace NovillusPath.API.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin,Instructor")]
+        [Authorize(Roles = Roles.Admin + "," + Roles.Instructor)]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(LessonDto))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -45,7 +45,7 @@ namespace NovillusPath.API.Controllers
         }
 
         [HttpPut("{lessonId:guid}")]
-        [Authorize(Roles = "Admin,Instructor")]
+        [Authorize(Roles = Roles.Admin + "," + Roles.Instructor)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -57,7 +57,7 @@ namespace NovillusPath.API.Controllers
         }
 
         [HttpPatch("{lessonId:guid}/status")]
-        [Authorize(Roles = "Admin,Instructor")]
+        [Authorize(Roles = Roles.Admin + "," + Roles.Instructor)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -69,7 +69,7 @@ namespace NovillusPath.API.Controllers
         }
 
         [HttpDelete("{lessonId:guid}")]
-        [Authorize(Roles = "Admin,Instructor")]
+        [Authorize(Roles = Roles.Admin + "," + Roles.Instructor)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
