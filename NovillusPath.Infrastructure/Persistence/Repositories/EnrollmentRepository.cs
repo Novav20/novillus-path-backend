@@ -1,7 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-using NovillusPath.Application.Interfaces.Persistence;
-using NovillusPath.Domain.Entities;
-
 namespace NovillusPath.Infrastructure.Persistence.Repositories;
 
 public class EnrollmentRepository(NovillusDbContext context) : EfRepository<Enrollment>(context), IEnrollmentRepository

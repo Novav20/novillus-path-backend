@@ -1,7 +1,5 @@
 using Microsoft.AspNetCore.Identity;
 using NovillusPath.Application.DTOs.User;
-using NovillusPath.Application.Interfaces.Identity;
-using NovillusPath.Domain.Entities;
 
 namespace NovillusPath.Infrastructure.Identity;
 

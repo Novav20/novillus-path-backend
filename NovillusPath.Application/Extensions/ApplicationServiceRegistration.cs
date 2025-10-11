@@ -1,8 +1,6 @@
 using System.Reflection;
-using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.Extensions.DependencyInjection;
-using NovillusPath.Application.Interfaces.Services;
 using NovillusPath.Application.Services;
 
 namespace NovillusPath.Application.Extensions;

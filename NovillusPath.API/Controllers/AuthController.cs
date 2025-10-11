@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
-using NovillusPath.Application.DTOs.User;
 using NovillusPath.Application.Interfaces.Identity;
 
 namespace NovillusPath.API.Controllers

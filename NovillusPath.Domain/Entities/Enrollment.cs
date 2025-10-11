@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace NovillusPath.Domain.Entities;
 
 public class Enrollment

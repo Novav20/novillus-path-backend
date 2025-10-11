@@ -1,14 +1,5 @@
 using System.Linq.Expressions;
-using AutoMapper;
-using NovillusPath.Application.DTOs.Common;
 using NovillusPath.Application.DTOs.Course;
-using NovillusPath.Application.Exceptions;
-using NovillusPath.Application.Helpers;
-using NovillusPath.Application.Interfaces.Common;
-using NovillusPath.Application.Interfaces.Persistence;
-using NovillusPath.Application.Interfaces.Services;
-using NovillusPath.Domain.Entities;
-using NovillusPath.Domain.Enums;
 using NovillusPath.Application.Constants;
 
 namespace NovillusPath.Application.Services;

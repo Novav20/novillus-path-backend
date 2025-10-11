@@ -1,4 +1,3 @@
-using FluentValidation;
 using NovillusPath.Application.DTOs.Course;
 
 namespace NovillusPath.Application.Validation.Course;

@@ -1,4 +1,3 @@
-using FluentValidation;
 using NovillusPath.Application.DTOs.User;
 
 namespace NovillusPath.Application.Validation.User;

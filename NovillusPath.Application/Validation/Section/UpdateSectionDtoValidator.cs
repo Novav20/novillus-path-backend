@@ -1,4 +1,3 @@
-using FluentValidation;
 using NovillusPath.Application.DTOs.Section;
 
 namespace NovillusPath.Application.Validation.Section;

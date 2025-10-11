@@ -1,6 +1,4 @@
-using AutoMapper;
 using NovillusPath.Application.DTOs.Section;
-using NovillusPath.Domain.Entities;
 
 namespace NovillusPath.Application.Mappings;
 

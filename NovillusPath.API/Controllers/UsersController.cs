@@ -1,10 +1,3 @@
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using NovillusPath.Application.DTOs.Course;
-using NovillusPath.Application.Interfaces.Common;
-using NovillusPath.Application.Interfaces.Services;
-using NovillusPath.Application.Constants;
-
 namespace NovillusPath.API.Controllers
 {
     /// <summary>

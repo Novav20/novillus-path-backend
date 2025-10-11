@@ -1,7 +1,4 @@
 using System.Linq.Expressions;
-using Microsoft.EntityFrameworkCore;
-using NovillusPath.Application.Interfaces.Persistence;
-using NovillusPath.Domain.Entities;
 
 namespace NovillusPath.Infrastructure.Persistence.Repositories;
 

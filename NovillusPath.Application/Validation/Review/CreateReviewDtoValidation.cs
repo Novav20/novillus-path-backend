@@ -1,4 +1,3 @@
-using FluentValidation;
 using NovillusPath.Application.DTOs.Review;
 
 namespace NovillusPath.Application.Validation.Review;

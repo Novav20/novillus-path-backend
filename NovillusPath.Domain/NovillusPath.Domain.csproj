@@ -10,4 +10,14 @@
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.4" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Using Include="System" />
+    <Using Include="System.Collections.Generic" />
+    <Using Include="System.ComponentModel.DataAnnotations" />
+    <Using Include="System.ComponentModel.DataAnnotations.Schema" />
+    <Using Include="Microsoft.AspNetCore.Identity" />
+    <Using Include="NovillusPath.Domain.Enums" />
+    <Using Include="NovillusPath.Domain.Entities.Content" />
+  </ItemGroup>
+
 </Project>

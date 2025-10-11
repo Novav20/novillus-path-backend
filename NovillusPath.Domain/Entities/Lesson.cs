@@ -1,7 +1,3 @@
-using System.ComponentModel.DataAnnotations.Schema;
-using NovillusPath.Domain.Entities.Content;
-using NovillusPath.Domain.Enums;
-
 namespace NovillusPath.Domain.Entities;
 
 public class Lesson

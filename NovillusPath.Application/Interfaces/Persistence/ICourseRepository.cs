@@ -1,8 +1,6 @@
 using System.Linq.Expressions;
-using NovillusPath.Application.DTOs.Common;
 using NovillusPath.Application.DTOs.Course;
 using NovillusPath.Application.DTOs.Dashboard;
-using NovillusPath.Domain.Entities;
 
 namespace NovillusPath.Application.Interfaces.Persistence;
 

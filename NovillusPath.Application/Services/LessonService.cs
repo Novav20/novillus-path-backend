@@ -1,14 +1,6 @@
-using AutoMapper;
 using NovillusPath.Application.DTOs.Lesson;
-using NovillusPath.Application.Interfaces.Common;
-using NovillusPath.Application.Interfaces.Persistence;
-using NovillusPath.Application.Interfaces.Services;
-using NovillusPath.Application.Exceptions;
-using NovillusPath.Domain.Entities;
 using NovillusPath.Domain.Entities.Content;
-using NovillusPath.Domain.Enums;
 using System.Linq.Expressions;
-using NovillusPath.Application.Helpers;
 
 namespace NovillusPath.Application.Services;
 

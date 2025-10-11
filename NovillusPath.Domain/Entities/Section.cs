@@ -1,6 +1,3 @@
-using System.ComponentModel.DataAnnotations.Schema;
-using NovillusPath.Domain.Enums;
-
 namespace NovillusPath.Domain.Entities;
 
 public class Section

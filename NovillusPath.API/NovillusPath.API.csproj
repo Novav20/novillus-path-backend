@@ -27,4 +27,24 @@
     <ProjectReference Include="../NovillusPath.Infrastructure/NovillusPath.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Using Include="Microsoft.AspNetCore.Mvc" />
+    <Using Include="Microsoft.AspNetCore.Authorization" />
+    <Using Include="System.Net.Mime" />
+    <Using Include="NovillusPath.Application.Constants" />
+    <Using Include="NovillusPath.Application.Exceptions" />
+    <Using Include="NovillusPath.Application.Interfaces.Common" />
+    <Using Include="NovillusPath.Application.Interfaces.Services" />
+    <Using Include="NovillusPath.Application.DTOs.Common" />
+    <Using Include="NovillusPath.Application.DTOs.Course" />
+    <Using Include="NovillusPath.Application.DTOs.Category" />
+    <Using Include="NovillusPath.Application.DTOs.Dashboard" />
+    <Using Include="NovillusPath.Application.DTOs.Lesson" />
+    <Using Include="NovillusPath.Application.DTOs.Review" />
+    <Using Include="NovillusPath.Application.DTOs.Section" />
+    <Using Include="NovillusPath.Application.DTOs.User" />
+    <Using Include="System.Threading.Tasks" />
+    <Using Include="System.Collections.Generic" />
+  </ItemGroup>
+
 </Project>

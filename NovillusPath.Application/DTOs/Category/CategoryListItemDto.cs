@@ -1,5 +1,3 @@
-using System;
-
 namespace NovillusPath.Application.DTOs.Category;
 
 public class CategoryListItemDto

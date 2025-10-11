@@ -1,5 +1,4 @@
 using System.Security.Claims;
-using NovillusPath.Application.Interfaces.Common;
 
 namespace NovillusPath.API.Services;
 

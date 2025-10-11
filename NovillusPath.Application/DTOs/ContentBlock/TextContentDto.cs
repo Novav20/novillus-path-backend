@@ -1,5 +1,3 @@
-using NovillusPath.Domain.Enums;
-
 namespace NovillusPath.Application.DTOs.ContentBlock;
 
 public class TextContentDto : ContentBlockDto

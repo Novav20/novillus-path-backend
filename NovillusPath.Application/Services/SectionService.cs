@@ -1,13 +1,5 @@
-using AutoMapper;
 using NovillusPath.Application.DTOs.Section;
-using NovillusPath.Application.Interfaces.Common;
-using NovillusPath.Application.Interfaces.Persistence;
-using NovillusPath.Application.Interfaces.Services;
-using NovillusPath.Domain.Entities;
-using NovillusPath.Application.Exceptions;
-using NovillusPath.Domain.Enums;
 using System.Linq.Expressions; // Add this using statement
-using NovillusPath.Application.Helpers;
 
 namespace NovillusPath.Application.Services;
 

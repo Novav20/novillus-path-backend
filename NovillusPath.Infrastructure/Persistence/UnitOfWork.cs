@@ -1,6 +1,3 @@
-using NovillusPath.Application.Interfaces.Persistence;
-using NovillusPath.Infrastructure.Persistence.Repositories;
-
 namespace NovillusPath.Infrastructure.Persistence;
 
 public class UnitOfWork(NovillusDbContext context) : IUnitOfWork

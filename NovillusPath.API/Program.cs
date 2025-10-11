@@ -8,7 +8,6 @@ using NovillusPath.Infrastructure.Extensions;
 using NovillusPath.Infrastructure.Persistence;
 using NovillusPath.Infrastructure.Persistence.Seed;
 using System.Reflection;
-using System.IO;
 using Serilog;
 
 Log.Logger = new LoggerConfiguration()

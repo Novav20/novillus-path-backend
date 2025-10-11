@@ -1,4 +1,3 @@
-using FluentValidation;
 using NovillusPath.Application.DTOs.Category;
 
 namespace NovillusPath.Application.Validation.Category;

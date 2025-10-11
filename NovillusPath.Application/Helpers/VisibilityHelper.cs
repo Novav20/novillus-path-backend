@@ -1,7 +1,3 @@
-using NovillusPath.Domain.Enums;
-using NovillusPath.Domain.Entities;
-using NovillusPath.Application.Interfaces.Common;
-
 namespace NovillusPath.Application.Helpers;
 
 public static class VisibilityHelper

@@ -1,12 +1,4 @@
-using AutoMapper;
-using NovillusPath.Application.DTOs.Common;
 using NovillusPath.Application.DTOs.Review;
-using NovillusPath.Application.Exceptions;
-using NovillusPath.Application.Helpers;
-using NovillusPath.Application.Interfaces.Common;
-using NovillusPath.Application.Interfaces.Persistence;
-using NovillusPath.Application.Interfaces.Services;
-using NovillusPath.Domain.Entities;
 
 namespace NovillusPath.Application.Services;
 

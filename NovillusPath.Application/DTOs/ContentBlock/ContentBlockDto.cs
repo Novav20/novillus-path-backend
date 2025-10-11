@@ -1,5 +1,4 @@
 using System.Text.Json.Serialization;
-using NovillusPath.Domain.Enums;
 
 namespace NovillusPath.Application.DTOs.ContentBlock;
 

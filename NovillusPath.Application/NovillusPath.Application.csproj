@@ -15,4 +15,21 @@
     <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Using Include="System" />
+    <Using Include="System.Collections.Generic" />
+    <Using Include="System.Linq" />
+    <Using Include="System.Threading.Tasks" />
+    <Using Include="NovillusPath.Domain.Entities" />
+    <Using Include="NovillusPath.Domain.Enums" />
+    <Using Include="NovillusPath.Application.DTOs.Common" />
+    <Using Include="NovillusPath.Application.Exceptions" />
+    <Using Include="NovillusPath.Application.Helpers" />
+    <Using Include="NovillusPath.Application.Interfaces.Common" />
+    <Using Include="NovillusPath.Application.Interfaces.Persistence" />
+    <Using Include="NovillusPath.Application.Interfaces.Services" />
+    <Using Include="AutoMapper" />
+    <Using Include="FluentValidation" />
+  </ItemGroup>
+
 </Project>

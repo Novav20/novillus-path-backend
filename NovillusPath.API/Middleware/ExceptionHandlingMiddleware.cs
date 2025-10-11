@@ -1,6 +1,5 @@
 using System.Net;
 using System.Text.Json;
-using NovillusPath.Application.Exceptions;
 
 namespace NovillusPath.API.Middleware;
 

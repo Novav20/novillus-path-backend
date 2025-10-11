@@ -1,6 +1,4 @@
-using AutoMapper;
 using NovillusPath.Application.DTOs.Course;
-using NovillusPath.Domain.Entities;
 
 namespace NovillusPath.Application.Mappings;
 

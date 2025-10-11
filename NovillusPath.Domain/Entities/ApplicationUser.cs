@@ -1,6 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Identity;
-
 namespace NovillusPath.Domain.Entities;
 
 public class ApplicationUser : IdentityUser<Guid>

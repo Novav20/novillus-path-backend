@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using NovillusPath.Domain.Enums;
 
 namespace NovillusPath.Application.DTOs.Course;
 

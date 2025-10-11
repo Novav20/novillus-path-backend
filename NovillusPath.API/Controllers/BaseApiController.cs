@@ -1,6 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
-using NovillusPath.Application.Exceptions; // Assuming your custom exceptions are here
-
 namespace NovillusPath.API.Controllers;
 
 /// <summary>

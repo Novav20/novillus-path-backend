@@ -1,12 +1,4 @@
 using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using NovillusPath.Application.Interfaces.Identity;
-using NovillusPath.Application.Interfaces.Persistence;
-using NovillusPath.Infrastructure.Identity;
-using NovillusPath.Infrastructure.Persistence;
-using NovillusPath.Infrastructure.Persistence.Repositories;
 
 namespace NovillusPath.Infrastructure.Extensions;
 

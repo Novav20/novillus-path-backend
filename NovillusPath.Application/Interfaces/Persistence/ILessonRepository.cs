@@ -1,5 +1,4 @@
 using System.Linq.Expressions;
-using NovillusPath.Domain.Entities;
 
 namespace NovillusPath.Application.Interfaces.Persistence;
 

@@ -1,11 +1,8 @@
 using System.Linq.Expressions;
-using Microsoft.EntityFrameworkCore;
 using NovillusPath.Application.DTOs.Category;
 using NovillusPath.Application.DTOs.Common;
 using NovillusPath.Application.DTOs.Course;
 using NovillusPath.Application.DTOs.Dashboard;
-using NovillusPath.Application.Interfaces.Persistence;
-using NovillusPath.Domain.Entities;
 
 namespace NovillusPath.Infrastructure.Persistence.Repositories;
 

@@ -1,5 +1,4 @@
 using NovillusPath.API.Services;
-using NovillusPath.Application.Interfaces.Common;
 
 namespace NovillusPath.API.Extensions;
 

@@ -21,4 +21,20 @@
     <ProjectReference Include="../NovillusPath.Domain/NovillusPath.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Using Include="System" />
+    <Using Include="System.Collections.Generic" />
+    <Using Include="System.Linq" />
+    <Using Include="System.Threading.Tasks" />
+    <Using Include="Microsoft.EntityFrameworkCore" />
+    <Using Include="Microsoft.Extensions.Configuration" />
+    <Using Include="Microsoft.Extensions.DependencyInjection" />
+    <Using Include="NovillusPath.Application.Interfaces.Persistence" />
+    <Using Include="NovillusPath.Domain.Entities" />
+    <Using Include="NovillusPath.Infrastructure.Persistence" />
+    <Using Include="NovillusPath.Infrastructure.Persistence.Repositories" />
+    <Using Include="NovillusPath.Application.Interfaces.Identity" />
+    <Using Include="NovillusPath.Infrastructure.Identity" />
+  </ItemGroup>
+
 </Project>

@@ -1,7 +1,4 @@
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using NovillusPath.Domain.Entities;
 using NovillusPath.Application.Constants;
 
 namespace NovillusPath.Infrastructure.Persistence.Seed;

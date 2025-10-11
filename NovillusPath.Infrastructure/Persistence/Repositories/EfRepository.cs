@@ -1,6 +1,4 @@
 using System.Linq.Expressions;
-using Microsoft.EntityFrameworkCore;
-using NovillusPath.Application.Interfaces.Persistence;
 namespace NovillusPath.Infrastructure.Persistence.Repositories;
 
 public class EfRepository<T>(NovillusDbContext context) : IRepository<T> where T : class

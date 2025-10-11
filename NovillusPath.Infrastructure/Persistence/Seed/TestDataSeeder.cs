@@ -1,6 +1,4 @@
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using NovillusPath.Domain.Entities;
 using NovillusPath.Domain.Entities.Content;
 using NovillusPath.Domain.Enums;
 
