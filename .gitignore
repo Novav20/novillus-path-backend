@@ -483,3 +483,7 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+# Ignore user secrets configuration script
+set-user-secrets.sh
+
+Roadmap/

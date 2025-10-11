@@ -1,6 +1,10 @@
-using NovillusPath.Infrastructure.Extensions;
-using NovillusPath.Application.Extensions;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using NovillusPath.API.Extensions;
+using NovillusPath.Application.Extensions;
+using NovillusPath.Domain.Entities;
+using NovillusPath.Infrastructure.Extensions;
+using NovillusPath.Infrastructure.Persistence;
 using NovillusPath.Infrastructure.Persistence.Seed;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -39,12 +43,28 @@ using (var scope = app.Services.CreateScope())
     var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
     try
     {
-        await IdentityDataSeeder.SeedDataAsync(serviceProvider);
-        logger.LogInformation("Identity data seeded successfully.");
+        var context = serviceProvider.GetRequiredService<NovillusDbContext>();
+        var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+        var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
+
+        // Apply migrations to create/update database schema
+        await context.Database.MigrateAsync();
+        logger.LogInformation("Database migrations applied successfully.");
+
+        // Seed essential data (roles, admin user)
+        await EssentialDataSeeder.SeedDataAsync(serviceProvider);
+        logger.LogInformation("Essential data seeded successfully.");
+
+        // Seed test data only in Development environment
+        if (app.Environment.IsDevelopment())
+        {
+            await TestDataSeeder.SeedDataAsync(context, userManager);
+            logger.LogInformation("Test data seeded successfully.");
+        }
     }
     catch (Exception ex)
     {
-        logger.LogError(ex, "An error occurred while seeding identity data.");
+        logger.LogError(ex, "An error occurred during the seeding process.");
     }
 }
 

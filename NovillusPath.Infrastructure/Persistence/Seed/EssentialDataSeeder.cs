@@ -5,7 +5,7 @@ using NovillusPath.Domain.Entities;
 
 namespace NovillusPath.Infrastructure.Persistence.Seed;
 
-public static class IdentityDataSeeder
+public static class EssentialDataSeeder
 {
     public static async Task SeedDataAsync(IServiceProvider serviceProvider)
     {
