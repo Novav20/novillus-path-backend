@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using NovillusPath.Application.DTOs.Category;
 using NovillusPath.Application.DTOs.Course;
+using NovillusPath.Application.DTOs.Dashboard;
 using NovillusPath.Application.Interfaces.Persistence;
 using NovillusPath.Domain.Entities;
 
@@ -85,6 +86,22 @@ public class CourseRepository(NovillusDbContext context) : EfRepository<Course>(
                     .ThenInclude(l => l.ContentBlocks)
             .AsNoTracking()
             .FirstOrDefaultAsync(c => c.Id == courseId, cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<CreatedCourseSummaryDto>> GetInstructorCoursesSummaryAsync(Guid instructorId, CancellationToken cancellationToken)
+    {
+        return await _context.Courses
+            .Where(c => c.InstructorId == instructorId)
+            .Select(c => new CreatedCourseSummaryDto
+            {
+                CourseId = c.Id,
+                Title = c.Title,
+                Status = c.Status.ToString(),
+                StudentCount = c.Enrollments.Count(),
+                AverageRating = c.Reviews.Any() ? c.Reviews.Average(r => r.Rating) : 0
+            })
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
     }
 
     public override async Task<IReadOnlyList<Course>> ListAllAsync(CancellationToken cancellationToken = default)

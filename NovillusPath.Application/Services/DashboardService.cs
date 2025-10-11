@@ -29,4 +29,23 @@ public class DashboardService(IUnitOfWork unitOfWork, IMapper mapper, ICurrentUs
             EnrolledCourses = enrolledCoursesSummary
         };
     }
+
+    public async Task<InstructorDashboardDto> GetInstructorDashboardAsync(CancellationToken cancellationToken)
+    {
+        var instructorId = _currentUserService.UserId ?? throw new ServiceAuthorizationException("User ID could not be determined.");
+
+        var courseSummaries = await _unitOfWork.CourseRepository.GetInstructorCoursesSummaryAsync(instructorId, cancellationToken);
+
+        var totalEnrollments = courseSummaries.Sum(c => c.StudentCount);
+        var coursesWithRatings = courseSummaries.Where(c => c.AverageRating > 0).ToList();
+        var overallAverageRating = coursesWithRatings.Any() ? coursesWithRatings.Average(c => c.AverageRating) : 0;
+
+        return new InstructorDashboardDto
+        {
+            TotalCourses = courseSummaries.Count,
+            TotalEnrollments = totalEnrollments,
+            OverallAverageRating = overallAverageRating,
+            Courses = [.. courseSummaries]
+        };
+    }
 }

@@ -29,5 +29,23 @@ namespace NovillusPath.API.Controllers
                 return UnauthorizedProblem(ex);
             }
         }
+
+        [HttpGet("instructor")]
+        [Authorize(Roles = "Instructor")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(InstructorDashboardDto))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<ActionResult<InstructorDashboardDto>> GetInstructorDashboard(CancellationToken cancellationToken)
+        {
+            try
+            {
+                var dashboard = await _dashboardService.GetInstructorDashboardAsync(cancellationToken);
+                return Ok(dashboard);
+            }
+            catch (ServiceAuthorizationException ex)
+            {
+                return UnauthorizedProblem(ex);
+            }
+        }
     }
 }
