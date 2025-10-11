@@ -47,8 +47,5 @@ namespace NovillusPath.API.Controllers
             return BadRequest(new { Message = "Invalid email or password." });
         }
     }
-    public class LoginResponseDto
-    {
-        public required string Token { get; set; }
-    }
+    
 }
