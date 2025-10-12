@@ -1,18 +1,17 @@
 using NovillusPath.Application.DTOs.Section;
+using NovillusPath.Application.Validation.Common;
 
 namespace NovillusPath.Application.Validation.Section;
 
-public class UpdateSectionDtoValidator : AbstractValidator<UpdateSectionDto>
+public class UpdateSectionDtoValidator : BaseValidator<UpdateSectionDto>
 {
     public UpdateSectionDtoValidator()
     {
         RuleFor(s => s.Title)
-            .NotEmpty().WithMessage("{PropertyName} is required if provided.")
-            .MaximumLength(150).WithMessage("{PropertyName} must not exceed 150 characters.")
+            .NotEmpty().WithMessage("{PropertyName} es requerido si se proporciona.")
+            .MaximumLength(150).WithMessage("{PropertyName} no debe exceder los 150 caracteres.")
             .When(s => s.Title != null);
 
-        RuleFor(s => s.Order)
-            .GreaterThanOrEqualTo(0).WithMessage("{PropertyName} must be 0 or greater.")
-            .When(s => s.Order.HasValue);
+        RuleForOptionalInteger(s => s.Order, 0);
     }
 }

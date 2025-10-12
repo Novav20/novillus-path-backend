@@ -1,19 +1,14 @@
 using NovillusPath.Application.DTOs.Review;
+using NovillusPath.Application.Validation.Common;
 
 namespace NovillusPath.Application.Validation.Review;
 
-public class UpdateReviewDtoValidation : AbstractValidator<UpdateReviewDto>
+public class UpdateReviewDtoValidation : BaseValidator<UpdateReviewDto>
 {
     public UpdateReviewDtoValidation()
     {
-        // Rule for Rating (byte?, nullable in UpdateReviewDto)
-        RuleFor(r => r.Rating)
-            .InclusiveBetween((byte)1, (byte)5) 
-            .WithMessage("Rating must be between 1 and 5.")
-            .When(r => r.Rating.HasValue);
+        RuleForOptionalByte(r => r.Rating, 1, 5);
 
-        // Rule for Comment (string?, nullable)
-        RuleFor(r => r.Comment)
-            .MaximumLength(1000).WithMessage("{PropertyName} must not exceed 1000 characters.");
+        RuleForOptionalString(r => r.Comment, 1000);
     }
 }

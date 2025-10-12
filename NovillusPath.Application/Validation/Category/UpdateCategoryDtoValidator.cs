@@ -1,19 +1,18 @@
 using NovillusPath.Application.DTOs.Category;
+using NovillusPath.Application.Validation.Common;
 
 namespace NovillusPath.Application.Validation.Category;
 
-public class UpdateCategoryDtoValidator : AbstractValidator<UpdateCategoryDto>
+public class UpdateCategoryDtoValidator : BaseValidator<UpdateCategoryDto>
 {
     public UpdateCategoryDtoValidator()
     {
         RuleFor(dto => dto.Name)
-            .NotEmpty().WithMessage("{PropertyName} is required if provided.")
-            .MaximumLength(100).WithMessage("{PropertyName} must not exceed 100 characters.")
-            .MinimumLength(3).WithMessage("{PropertyName} must be at least 3 characters long.")
-            .When(dto => dto.Name != null); // Only validate if Name is part of the update payload
+            .NotEmpty().WithMessage("{PropertyName} es requerido si se proporciona.")
+            .MinimumLength(3).WithMessage("{PropertyName} debe tener al menos {MinLength} caracteres.")
+            .MaximumLength(100).WithMessage("{PropertyName} no debe exceder los {MaxLength} caracteres.")
+            .When(dto => dto.Name != null);
 
-        RuleFor(dto => dto.Description)
-            .MaximumLength(500).WithMessage("{PropertyName} must not exceed 500 characters.")
-            .When(dto => dto.Description != null); // Only validate if Description is part of the update payload
+        RuleForOptionalString(dto => dto.Description, 500);
     }
 }
