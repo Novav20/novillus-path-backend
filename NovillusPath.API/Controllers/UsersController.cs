@@ -5,7 +5,7 @@ namespace NovillusPath.API.Controllers
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
-    public class UsersController(IEnrollmentService enrollmentService, ICurrentUserService currentUserService) : BaseApiController
+    public class UsersController(IEnrollmentService enrollmentService, ICurrentUserService currentUserService) : ControllerBase
     {
         private readonly IEnrollmentService _enrollmentService = enrollmentService;
         private readonly ICurrentUserService _currentUserService = currentUserService;

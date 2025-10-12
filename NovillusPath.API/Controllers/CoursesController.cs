@@ -6,7 +6,7 @@ namespace NovillusPath.API.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Produces(MediaTypeNames.Application.Json)]
-public class CoursesController(ICourseService courseService) : BaseApiController
+public class CoursesController(ICourseService courseService) : ControllerBase
 {
     private readonly ICourseService _courseService = courseService;
 

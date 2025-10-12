@@ -5,7 +5,7 @@ namespace NovillusPath.API.Controllers
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
-    public class CategoriesController(ICategoryService categoryService) : BaseApiController
+    public class CategoriesController(ICategoryService categoryService) : ControllerBase
     {
         private readonly ICategoryService _categoryService = categoryService;
 

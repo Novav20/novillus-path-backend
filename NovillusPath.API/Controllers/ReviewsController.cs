@@ -5,7 +5,7 @@ namespace NovillusPath.API.Controllers
     /// </summary>
     [Route("api/courses/{courseId:guid}/[controller]")]
     [ApiController]
-    public class ReviewsController(IReviewService reviewService) : BaseApiController
+    public class ReviewsController(IReviewService reviewService) : ControllerBase
     {
         private readonly IReviewService _reviewService = reviewService;
 

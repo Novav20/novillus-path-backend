@@ -5,7 +5,7 @@ namespace NovillusPath.API.Controllers
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
-    public class DashboardController(IDashboardService dashboardService) : BaseApiController
+    public class DashboardController(IDashboardService dashboardService) : ControllerBase
     {
         private readonly IDashboardService _dashboardService = dashboardService;
 

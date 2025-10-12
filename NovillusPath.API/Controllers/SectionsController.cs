@@ -5,7 +5,7 @@ namespace NovillusPath.API.Controllers
     /// </summary>
     [Route("api/courses/{courseId:guid}/sections")]
     [ApiController]
-    public class SectionsController(ISectionService sectionService) : BaseApiController
+    public class SectionsController(ISectionService sectionService) : ControllerBase
     {
         private readonly ISectionService _sectionService = sectionService; 
 
