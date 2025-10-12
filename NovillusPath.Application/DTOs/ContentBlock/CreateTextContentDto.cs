@@ -1,8 +1,8 @@
 namespace NovillusPath.Application.DTOs.ContentBlock;
 
-public class CreateTextContentDto : CreateContentBlockBaseDto
+public record CreateTextContentDto : CreateContentBlockBaseDto
 {
-    public required string Text { get; set; }
+    public required string Text { get; init; }
 
     public CreateTextContentDto() => Type = ContentBlockType.Text;
 }

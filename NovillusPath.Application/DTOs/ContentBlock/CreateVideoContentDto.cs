@@ -1,10 +1,10 @@
 namespace NovillusPath.Application.DTOs.ContentBlock;
 
-public class CreateVideoContentDto : CreateContentBlockBaseDto
+public record CreateVideoContentDto : CreateContentBlockBaseDto
 {
-    public required string VideoUrl { get; set; }
-    public string? ThumbnailUrl { get; set; }
-    public string? Transcription { get; set; }
-    public int DurationMinutes { get; set; }
+    public required string VideoUrl { get; init; }
+    public string? ThumbnailUrl { get; init; }
+    public string? Transcription { get; init; }
+    public int DurationMinutes { get; init; }
     public CreateVideoContentDto() => Type = ContentBlockType.Video;
 }

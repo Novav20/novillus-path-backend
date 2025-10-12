@@ -2,9 +2,9 @@ using NovillusPath.Application.DTOs.ContentBlock;
 
 namespace NovillusPath.Application.DTOs.Lesson;
 
-public class CreateLessonDto
+public record CreateLessonDto
 {
-    public required string Title { get; set; }
-    public int? Order { get; set; }
-    public List<CreateContentBlockBaseDto> ContentBlocks { get; set; } = [];
+    public required string Title { get; init; }
+    public int? Order { get; init; }
+    public List<CreateContentBlockBaseDto> ContentBlocks { get; init; } = [];
 }

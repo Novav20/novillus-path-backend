@@ -1,10 +1,10 @@
 namespace NovillusPath.Application.DTOs.Dashboard;
 
-public class EnrolledCourseSummaryDto
+public record EnrolledCourseSummaryDto
 {
-    public Guid CourseId { get; set; }
-    public required string Title { get; set; }
-    public string? ImageUrl { get; set; }
-    public required string InstructorName { get; set; }
-    public int ProgressPercentage { get; set; } // Placeholder for now
+    public Guid CourseId { get; init; }
+    public required string Title { get; init; }
+    public string? ImageUrl { get; init; }
+    public required string InstructorName { get; init; }
+    public int ProgressPercentage { get; init; } // Placeholder for now
 }

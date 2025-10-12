@@ -1,12 +1,12 @@
 namespace NovillusPath.Application.DTOs.Course;
 
-public class CourseSearchParamsDto
+public record CourseSearchParamsDto
 {
-    public string? SearchTerm { get; set; }
-    public Guid? CategoryId { get; set; }
-    public double? MinRating { get; set; }
-    public string? SortBy { get; set; } // e.g., "title", "price", "rating", "date"
-    public string? SortOrder { get; set; } // "asc" or "desc"
-    public int PageNumber { get; set; } = 1;
-    public int PageSize { get; set; } = 10;
+    public string? SearchTerm { get; init; }
+    public Guid? CategoryId { get; init; }
+    public double? MinRating { get; init; }
+    public string? SortBy { get; init; } // e.g., "title", "price", "rating", "date"
+    public string? SortOrder { get; init; } // "asc" or "desc"
+    public int PageNumber { get; init; } = 1;
+    public int PageSize { get; init; } = 10;
 }

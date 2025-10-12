@@ -3,7 +3,7 @@ using NovillusPath.Application.DTOs.Section;
 
 namespace NovillusPath.Application.DTOs.Course;
 
-public class CourseDto
+public record CourseDto
 {
     public Guid Id { get; init; }
     public required string Title { get; init; }
@@ -18,6 +18,6 @@ public class CourseDto
     public DateTime UpdatedAt { get; init; }
     public IReadOnlyList<CategoryDto> Categories { get; init; } = [];
     public IReadOnlyList<SectionDto>? Sections { get; init; } = [];
-    public double AverageRating {get;set;}
-    public int TotalRatings {get;set;}
+    public double AverageRating { get; init; }
+    public int TotalRatings { get; init; }
 }

@@ -1,6 +1,6 @@
 namespace NovillusPath.Application.DTOs.User;
 
-public class LoginResponseDto
+public record LoginResponseDto
 {
-    public required string Token { get; set; }
+    public required string Token { get; init; }
 }

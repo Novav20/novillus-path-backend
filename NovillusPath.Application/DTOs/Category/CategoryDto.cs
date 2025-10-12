@@ -1,6 +1,6 @@
 namespace NovillusPath.Application.DTOs.Category;
 
-public class CategoryDto
+public record CategoryDto
 {
     public Guid Id { get; init; }
     public required string Name { get; init; }

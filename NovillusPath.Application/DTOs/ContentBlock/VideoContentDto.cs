@@ -1,6 +1,6 @@
 namespace NovillusPath.Application.DTOs.ContentBlock;
 
-public class VideoContentDto : ContentBlockDto
+public record VideoContentDto : ContentBlockDto
 {
     public required string VideoUrl { get; init; }
     public string? ThumbnailUrl { get; init; }

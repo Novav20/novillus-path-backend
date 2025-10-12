@@ -2,7 +2,7 @@ using NovillusPath.Application.DTOs.Category;
 
 namespace NovillusPath.Application.DTOs.Course;
 
-public class CourseListProjectionDto
+public record CourseListProjectionDto
 {
     public Guid Id { get; init; }
     public required string Title { get; init; }

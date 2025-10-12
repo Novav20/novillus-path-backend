@@ -5,8 +5,8 @@ namespace NovillusPath.Application.DTOs.ContentBlock;
 [JsonPolymorphic(TypeDiscriminatorPropertyName = "type")]
 [JsonDerivedType(typeof(CreateTextContentDto), typeDiscriminator: nameof(ContentBlockType.Text))]
 [JsonDerivedType(typeof(CreateVideoContentDto), typeDiscriminator: nameof(ContentBlockType.Video))]
-public abstract class CreateContentBlockBaseDto
+public abstract record CreateContentBlockBaseDto
 {
-    public ContentBlockType Type { get; set; }
-    public int Order { get; set; }
+    public ContentBlockType Type { get; init; }
+    public int Order { get; init; }
 }

@@ -1,6 +1,6 @@
 namespace NovillusPath.Application.DTOs.Section;
 
-public class UpdateSectionStatusDto
+public record UpdateSectionStatusDto
 {
-    public required string Status { get; set; }
+    public required string Status { get; init; }
 }

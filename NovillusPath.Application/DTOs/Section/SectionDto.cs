@@ -2,7 +2,7 @@ using NovillusPath.Application.DTOs.Lesson;
 
 namespace NovillusPath.Application.DTOs.Section;
 
-public class SectionDto
+public record SectionDto
 {
     public Guid Id { get; init; }
     public required string Title { get; init; }

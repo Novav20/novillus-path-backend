@@ -1,6 +1,6 @@
 namespace NovillusPath.Application.DTOs.Review;
 
-public class ReviewDto
+public record ReviewDto
 {
     public Guid Id { get; init; }
     public byte Rating { get; init; }
@@ -11,6 +11,6 @@ public class ReviewDto
     public DateTime UpdatedAt { get; init; }
     public Guid CourseId { get; init; }
     public Guid UserId { get; init; }
-    public bool CanEdit { get; set; }
-    public bool CanDelete { get; set; }
+    public bool CanEdit { get; init; }
+    public bool CanDelete { get; init; }
 }

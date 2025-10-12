@@ -1,6 +1,6 @@
 namespace NovillusPath.Application.DTOs.Lesson;
 
-public class UpdateLessonStatusDto
+public record UpdateLessonStatusDto
 {
-    public required string Status { get; set; }
+    public required string Status { get; init; }
 }

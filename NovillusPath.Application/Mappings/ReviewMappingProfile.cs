@@ -9,21 +9,22 @@ public class ReviewMappingProfile : Profile
         CreateMap<Review, ReviewDto>()
             .ForMember(dest => dest.UserFullName, opt => opt.MapFrom(src => src.User != null ? src.User.FullName : null))
             .ForMember(dest => dest.UserProfileImageUrl, opt => opt.MapFrom(src => src.User != null ? src.User.ProfilePictureUrl : null))
-            .AfterMap((src, dest, context) =>
+            .ForMember(dest => dest.CanEdit, opt => opt.MapFrom((src, dest, _, context) =>
             {
                 if (context.Items.TryGetValue("currentUserService", out var service) && service is ICurrentUserService currentUserService)
                 {
-                    var canModify = AuthorizationHelper.CanModifyReview(currentUserService, src.UserId);
-                    dest.CanEdit = canModify;
-                    dest.CanDelete = canModify;
+                    return AuthorizationHelper.CanModifyReview(currentUserService, src.UserId);
                 }
-                else
+                return false;
+            }))
+            .ForMember(dest => dest.CanDelete, opt => opt.MapFrom((src, dest, _, context) =>
+            {
+                if (context.Items.TryGetValue("currentUserService", out var service) && service is ICurrentUserService currentUserService)
                 {
-                    // Default values if service is not available
-                    dest.CanEdit = false;
-                    dest.CanDelete = false;
+                    return AuthorizationHelper.CanModifyReview(currentUserService, src.UserId);
                 }
-            });
+                return false;
+            }));
 
         CreateMap<CreateReviewDto, Review>()
             .ForMember(dest => dest.Id, opt => opt.Ignore())

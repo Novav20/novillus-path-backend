@@ -1,7 +1,7 @@
 namespace NovillusPath.Application.DTOs.Dashboard;
 
-public class StudentDashboardDto
+public record StudentDashboardDto
 {
-    public List<EnrolledCourseSummaryDto> EnrolledCourses { get; set; } = [];
+    public List<EnrolledCourseSummaryDto> EnrolledCourses { get; init; } = [];
     // Other dashboard elements can be added here in the future
 }

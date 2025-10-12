@@ -1,7 +1,7 @@
 namespace NovillusPath.Application.DTOs.Review;
 
-public class CreateReviewDto
+public record CreateReviewDto
 {
-    public byte Rating { get; set; }
-    public string? Comment { get; set; }
+    public byte Rating { get; init; }
+    public string? Comment { get; init; }
 }
