@@ -10,7 +10,7 @@ public class CreateReviewDtoValidation : BaseValidator<CreateReviewDto>
         RuleForRequiredByte(r => r.Rating, 1, 5);
 
         RuleFor(r => r.Comment)
-            .MaximumLength(1000).WithMessage("{PropertyName} no debe exceder los 1000 caracteres.")
+            .MaximumLength(1000).WithMessage("{PropertyName} cannot exceed 1000 characters.")
             .NotEmpty().When(r => r.Comment != null);
     }
 }

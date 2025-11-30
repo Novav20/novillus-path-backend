@@ -8,16 +8,16 @@ public class RegisterUserDtoValidator : BaseValidator<RegisterUserDto>
     public RegisterUserDtoValidator()
     {
         RuleFor(u => u.Email)
-            .NotEmpty().WithMessage("{PropertyName} es requerido.")
-            .EmailAddress().WithMessage("{PropertyName} no es una dirección de correo electrónico válida.");
+            .NotEmpty().WithMessage("{PropertyName} is required.")
+            .EmailAddress().WithMessage("{PropertyName} is not a valid email address.");
 
         RuleFor(u => u.Password)
-            .NotEmpty().WithMessage("{PropertyName} es requerido.")
-            .MinimumLength(6).WithMessage("{PropertyName} debe tener al menos 6 caracteres.");
+            .NotEmpty().WithMessage("{PropertyName} is required.")
+            .MinimumLength(6).WithMessage("{PropertyName} must have at least 6 characters.");
 
         RuleFor(u => u.ConfirmPassword)
-            .NotEmpty().WithMessage("{PropertyName} es requerido.")
-            .Equal(u => u.Password).WithMessage("Las contraseñas no coinciden.");
+            .NotEmpty().WithMessage("{PropertyName} is required.")
+            .Equal(u => u.Password).WithMessage("Passwords do not match.");
 
         RuleForOptionalString(u => u.FullName, 100);
     }

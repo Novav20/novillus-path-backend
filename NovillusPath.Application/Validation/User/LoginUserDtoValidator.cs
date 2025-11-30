@@ -8,10 +8,10 @@ public class LoginUserDtoValidator : BaseValidator<LoginUserDto>
     public LoginUserDtoValidator()
     {
         RuleFor(u => u.Email)
-            .NotEmpty().WithMessage("{PropertyName} es requerido.")
-            .EmailAddress().WithMessage("Formato de correo electrónico inválido.");
+            .NotEmpty().WithMessage("{PropertyName} is required.")
+            .EmailAddress().WithMessage("Invalid email format.");
 
         RuleFor(u => u.Password)
-            .NotEmpty().WithMessage("{PropertyName} es requerido.");
+            .NotEmpty().WithMessage("{PropertyName} is required.");
     }
 }

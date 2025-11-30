@@ -8,9 +8,9 @@ public class UpdateCategoryDtoValidator : BaseValidator<UpdateCategoryDto>
     public UpdateCategoryDtoValidator()
     {
         RuleFor(dto => dto.Name)
-            .NotEmpty().WithMessage("{PropertyName} es requerido si se proporciona.")
-            .MinimumLength(3).WithMessage("{PropertyName} debe tener al menos {MinLength} caracteres.")
-            .MaximumLength(100).WithMessage("{PropertyName} no debe exceder los {MaxLength} caracteres.")
+            .NotEmpty().WithMessage("{PropertyName} is required if provided.")
+            .MinimumLength(3).WithMessage("{PropertyName} must have at least {MinLength} characters.")
+            .MaximumLength(100).WithMessage("{PropertyName} cannot exceed {MaxLength} characters.")
             .When(dto => dto.Name != null);
 
         RuleForOptionalString(dto => dto.Description, 500);
