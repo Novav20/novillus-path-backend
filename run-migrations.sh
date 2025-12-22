@@ -4,8 +4,6 @@
 CONTAINER_NAME=""
 if [ "$(docker ps -q -f name=sourceguild-sql)" != "" ]; then
   CONTAINER_NAME=sourceguild-sql
-elif [ "$(docker ps -q -f name=novillus-sql)" != "" ]; then
-  CONTAINER_NAME=novillus-sql
 elif [ "$(docker ps -q -f name=sqlserver)" != "" ]; then
   CONTAINER_NAME=sqlserver
 fi
