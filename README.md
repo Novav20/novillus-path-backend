@@ -15,8 +15,8 @@ SourceGuild is an online learning platform backend built with ASP.NET Core. It p
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/Novav20/SourceGuild.git
-cd SourceGuild
+git clone https://github.com/Novav20/source-guild-backend.git
+cd source-guild-backend
 ```
 
 ### 2. Configure Database Connection String
