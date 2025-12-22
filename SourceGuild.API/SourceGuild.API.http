@@ -1,0 +1,6 @@
+@SourceGuild.API_HostAddress = http://localhost:5037
+
+GET {{SourceGuild.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../SourceGuild.Domain/SourceGuild.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+    <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="System" />
+    <Using Include="System.Collections.Generic" />
+    <Using Include="System.Linq" />
+    <Using Include="System.Threading.Tasks" />
+    <Using Include="SourceGuild.Domain.Entities" />
+    <Using Include="SourceGuild.Domain.Enums" />
+    <Using Include="SourceGuild.Application.DTOs.Common" />
+    <Using Include="SourceGuild.Application.Exceptions" />
+    <Using Include="SourceGuild.Application.Helpers" />
+    <Using Include="SourceGuild.Application.Interfaces.Common" />
+    <Using Include="SourceGuild.Application.Interfaces.Persistence" />
+    <Using Include="SourceGuild.Application.Interfaces.Services" />
+    <Using Include="AutoMapper" />
+    <Using Include="FluentValidation" />
+  </ItemGroup>
+
+</Project>

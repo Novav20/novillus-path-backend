@@ -1,0 +1,51 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>c144a716-0a4d-45b0-aec0-bad50f7dbe18</UserSecretsId>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <RollForward>Major</RollForward>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.4" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.4">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="8.1.2" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="8.1.2" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="8.1.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../SourceGuild.Application/SourceGuild.Application.csproj" />
+    <ProjectReference Include="../SourceGuild.Infrastructure/SourceGuild.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Microsoft.AspNetCore.Mvc" />
+    <Using Include="Microsoft.AspNetCore.Authorization" />
+    <Using Include="System.Net.Mime" />
+    <Using Include="SourceGuild.Application.Constants" />
+    <Using Include="SourceGuild.Application.Exceptions" />
+    <Using Include="SourceGuild.Application.Interfaces.Common" />
+    <Using Include="SourceGuild.Application.Interfaces.Services" />
+    <Using Include="SourceGuild.Application.DTOs.Common" />
+    <Using Include="SourceGuild.Application.DTOs.Course" />
+    <Using Include="SourceGuild.Application.DTOs.Category" />
+    <Using Include="SourceGuild.Application.DTOs.Dashboard" />
+    <Using Include="SourceGuild.Application.DTOs.Lesson" />
+    <Using Include="SourceGuild.Application.DTOs.Review" />
+    <Using Include="SourceGuild.Application.DTOs.Section" />
+    <Using Include="SourceGuild.Application.DTOs.User" />
+    <Using Include="System.Threading.Tasks" />
+    <Using Include="System.Collections.Generic" />
+  </ItemGroup>
+
+</Project>

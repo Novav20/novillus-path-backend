@@ -1,0 +1,24 @@
+using System.Reflection;
+using FluentValidation.AspNetCore;
+using Microsoft.Extensions.DependencyInjection;
+using SourceGuild.Application.Services;
+
+namespace SourceGuild.Application.Extensions;
+
+public static class ApplicationServiceRegistration
+{
+    public static IServiceCollection AddApplicationServices(this IServiceCollection services)
+    {
+        services.AddAutoMapper(Assembly.GetExecutingAssembly());
+        services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+        services.AddFluentValidationAutoValidation();
+        services.AddScoped<ICourseService, CourseService>();
+        services.AddScoped<ISectionService, SectionService>();
+        services.AddScoped<ILessonService, LessonService>();
+        services.AddScoped<IEnrollmentService, EnrollmentService>();
+        services.AddScoped<IReviewService, ReviewService>();
+        services.AddScoped<IDashboardService, DashboardService>();
+        services.AddScoped<ICategoryService, CategoryService>();
+        return services;
+    }
+}

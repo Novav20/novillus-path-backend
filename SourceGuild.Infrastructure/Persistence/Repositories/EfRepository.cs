@@ -1,0 +1,51 @@
+using System.Linq.Expressions;
+namespace SourceGuild.Infrastructure.Persistence.Repositories;
+
+public class EfRepository<T>(SGDbContext context) : IRepository<T> where T : class
+{
+    protected readonly SGDbContext _context = context;
+    public async Task<T> AddAsync(T entity, CancellationToken cancellationToken = default)
+    {
+        await _context.Set<T>().AddAsync(entity, cancellationToken);
+        return entity;
+    }
+
+    public Task DeleteAsync(T entity, CancellationToken cancellationToken = default)
+    {
+        _context.Set<T>().Remove(entity);
+        return Task.CompletedTask;
+    }
+
+    public virtual async Task<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        return await _context.Set<T>().FindAsync([id], cancellationToken);
+    }
+
+    public virtual async Task<IReadOnlyList<T>> ListAllAsync(CancellationToken cancellationToken = default)
+    {
+        return await _context.Set<T>().ToListAsync(cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<T>> ListAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default)
+    {
+        return await _context.Set<T>().Where(predicate).ToListAsync(cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<T>> ListAsync<TKey>(Expression<Func<T, bool>> predicate, Expression<Func<T, TKey>> orderBy, bool ascending = true, CancellationToken cancellationToken = default)
+    {
+        var query = _context.Set<T>().Where(predicate);
+        query = ascending ? query.OrderBy(orderBy) : query.OrderByDescending(orderBy);
+        return await query.ToListAsync(cancellationToken);
+    }
+
+    public Task UpdateAsync(T entity, CancellationToken cancellationToken = default)
+    {
+        _context.Set<T>().Update(entity);
+        return Task.CompletedTask;
+    }
+
+    public async Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default)
+    {
+        return await _context.Set<T>().AnyAsync(predicate, cancellationToken);
+    }
+}

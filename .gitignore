@@ -12,7 +12,7 @@
 *.user
 *.userosscache
 *.sln.docstates
-NovillusPath.Infrastructure/Migrations/
+SourceGuild.Infrastructure/Migrations/
 *.sql
 
 
@@ -385,7 +385,7 @@ MigrationBackup/
 FodyWeavers.xsd
 
 # Frontend Angular
-/NovillusPath.UI/ 
+/SourceGuild.UI/ 
 
 # .NET Core build files for those working on multiple tools
 .vscode/

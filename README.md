@@ -1,8 +1,8 @@
-# NovillusPath
+# SourceGuild
 
 ## Project Overview
 
-NovillusPath is an online learning platform backend built with ASP.NET Core. It provides APIs for managing courses, sections, lessons, content blocks, user authentication, enrollments, and reviews. The project follows Clean Architecture principles and uses Entity Framework Core for data persistence.
+SourceGuild is an online learning platform backend built with ASP.NET Core. It provides APIs for managing courses, sections, lessons, content blocks, user authentication, enrollments, and reviews. The project follows Clean Architecture principles and uses Entity Framework Core for data persistence.
 
 ## Setup Instructions
 
@@ -15,13 +15,13 @@ NovillusPath is an online learning platform backend built with ASP.NET Core. It 
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-repo/NovillusPath.git
-cd NovillusPath
+git clone https://github.com/your-repo/SourceGuild.git
+cd SourceGuild
 ```
 
 ### 2. Configure Database Connection String
 
-Update the `ConnectionStrings` in `NovillusPath.API/appsettings.Development.json` to point to your SQL Server instance. For local development, it's recommended to use User Secrets for sensitive information like database credentials.
+Update the `ConnectionStrings` in `SourceGuild.API/appsettings.Development.json` to point to your SQL Server instance. For local development, it's recommended to use User Secrets for sensitive information like database credentials.
 
 Example `appsettings.Development.json` (ensure `DbCredentials:UserId` and `DbCredentials:Password` are set in User Secrets):
 
@@ -33,8 +33,8 @@ Example `appsettings.Development.json` (ensure `DbCredentials:UserId` and `DbCre
       "Microsoft.AspNetCore": "Warning"
     }
   },
-  "ConnectionStrings": {
-    "NovillusDbConnection_Template": "Data Source=localhost,1433;Database=NovillusPathDb;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;Authentication=SqlPassword;Application Name=vscode-mssql;Connect Retry Count=1;Connect Retry Interval=10;Command Timeout=30"
+    "ConnectionStrings": {
+    "SourceGuildDbConnection_Template": "Data Source=localhost,1433;Database=SourceGuildDb;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;Authentication=SqlPassword;Application Name=vscode-mssql;Connect Retry Count=1;Connect Retry Interval=10;Command Timeout=30"
   },
   "CorsSettings": {
     "AllowedOrigins": [
@@ -43,12 +43,12 @@ Example `appsettings.Development.json` (ensure `DbCredentials:UserId` and `DbCre
   },
   "JwtSettings": {
     "SecretKey": "YourSuperSecretKeyThatIsAtLeast32CharactersLong",
-    "Issuer": "NovillusPath.API",
-    "Audience": "NovillusPath.UI",
+    "Issuer": "SourceGuild.API",
+    "Audience": "SourceGuild.UI",
     "DurationInMinutes": 60
   },
   "SeedAdminCredentials": {
-    "Email": "admin@novillus.com",
+    "Email": "admin@sourceguild.com",
     "Password": "Admin123!"
   }
 }
@@ -67,23 +67,23 @@ dotnet user-secrets set "JwtSettings:SecretKey" "YourSuperSecretKeyThatIsAtLeast
 Navigate to the project root and run the migrations. This will create the database schema and seed essential data (roles, admin user).
 
 ```bash
-dotnet ef database update --project NovillusPath.Infrastructure --startup-project NovillusPath.API
+dotnet ef database update --project SourceGuild.Infrastructure --startup-project SourceGuild.API
 ```
 
 ### 4. Run the API
 
 ```bash
-dotnet run --project NovillusPath.API
+dotnet run --project SourceGuild.API
 ```
 
-The API will typically run on `https://localhost:7000` (or a similar port). You can find the exact URL in `NovillusPath.API/Properties/launchSettings.json`.
+The API will typically run on `https://localhost:7000` (or a similar port). You can find the exact URL in `SourceGuild.API/Properties/launchSettings.json`.
 
 ## API Usage
 
 Once the API is running, you can access the Swagger UI at `https://localhost:7000/swagger` (adjust port if necessary) to explore the available endpoints and test them.
 
 ### Admin User Credentials (for development seeding):
-- **Email:** `admin@novillus.com`
+- **Email:** `admin@sourceguild.com`
 - **Password:** `Admin123!`
 
 ### Example Endpoints:
