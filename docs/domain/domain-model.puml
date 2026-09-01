@@ -1,0 +1,127 @@
+@startuml "SourceGuild Domain Model"
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+skinparam class {
+    BackgroundColor #EBF5FB
+    BorderColor #2E86C1
+    BorderThickness 2
+    ArrowColor #154360
+}
+
+package "Course Management Aggregate" {
+    class Course <<Aggregate Root>> {
+        - Id: Guid
+        - Title: string
+        - Description: string?
+        - Price: decimal
+        - Status: CourseStatus
+        - DurationInWeeks: int?
+        - ImageUrl: string?
+        - StartDate: DateTime?
+        - InstructorId: Guid
+        + UpdateDetails(title, description, imageUrl): void
+        + UpdatePrice(price: decimal): void
+        + Publish(): Result
+        + Archive(): void
+        + AddSection(title: string): Section
+        + RemoveSection(sectionId: Guid): void
+        + AddLessonToSection(sectionId: Guid, title: string): Lesson
+    }
+
+    class Section <<Entity>> {
+        - Id: Guid
+        - Title: string
+        - Order: int
+        - Status: SectionStatus
+        - CourseId: Guid
+        + UpdateTitle(title: string): void
+        + AddLesson(title: string): Lesson
+    }
+
+    class Lesson <<Entity>> {
+        - Id: Guid
+        - Title: string
+        - Order: int
+        - Status: LessonStatus
+        - SectionId: Guid
+        + UpdateTitle(title: string): void
+        + AddTextContent(text: string): TextContent
+        + AddVideoContent(url: string, duration: int): VideoContent
+    }
+
+    abstract class ContentBlock <<Entity>> {
+        - Id: Guid
+        - Order: int
+        - LessonId: Guid
+        - CreatedAt: DateTime
+    }
+
+    class TextContent {
+        - Text: string
+    }
+
+    class VideoContent {
+        - VideoUrl: string
+        - ThumbnailUrl: string?
+        - Transcription: string?
+        - DurationMinutes: int
+    }
+
+    Course "1" *-- "0..*" Section : "contains"
+    Section "1" *-- "0..*" Lesson : "contains"
+    Lesson "1" *-- "0..*" ContentBlock : "contains"
+    ContentBlock <|-- TextContent
+    ContentBlock <|-- VideoContent
+}
+
+package "Enrollment Aggregate" {
+    class Enrollment <<Aggregate Root>> {
+        - Id: Guid
+        - UserId: Guid
+        - CourseId: Guid
+        - EnrolledAt: DateTime
+        - ProgressPercentage: int
+        + UpdateProgress(percentage: int): Result
+        + MarkAsCompleted(): void
+    }
+}
+
+package "Taxonomy Aggregate" {
+    class Category <<Aggregate Root>> {
+        - Id: Guid
+        - Name: string
+        - Description: string?
+        + Update(name: string, description: string?): void
+    }
+}
+
+package "Review Aggregate" {
+    class Review <<Aggregate Root>> {
+        - Id: Guid
+        - Rating: byte
+        - Comment: string?
+        - UserId: Guid
+        - CourseId: Guid
+        + Update(rating: byte, comment: string?): Result
+    }
+}
+
+package "Identity Aggregate" {
+    class ApplicationUser <<Aggregate Root>> {
+        - Id: Guid
+        - FullName: string?
+        - ProfilePictureUrl: string?
+    }
+}
+
+Course "0..*" -- "0..*" Category : "categorized in"
+ApplicationUser "1" -- "0..*" Course : "teaches"
+ApplicationUser "1" -- "0..*" Enrollment : "enrolls"
+Course "1" -- "0..*" Enrollment : "has"
+ApplicationUser "1" -- "0..*" Review : "writes"
+Course "1" -- "0..*" Review : "receives"
+
+@enduml

@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/SourceGuild.API/SourceGuild.API.csproj" />
+    <Project Path="src/SourceGuild.Application/SourceGuild.Application.csproj" />
+    <Project Path="src/SourceGuild.Domain/SourceGuild.Domain.csproj" />
+    <Project Path="src/SourceGuild.Infrastructure/SourceGuild.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/SourceGuild.Tests/SourceGuild.Tests.csproj" />
+  </Folder>
+</Solution>

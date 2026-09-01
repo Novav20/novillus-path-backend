@@ -1,0 +1,115 @@
+@startuml "SourceGuild Logical ERD"
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+entity "AspNetUsers" as users {
+    * Id : uniqueidentifier <<PK>>
+    --
+    * UserName : nvarchar(256)
+    * Email : nvarchar(256)
+    FullName : nvarchar(150)
+    ProfilePictureUrl : nvarchar(max)
+}
+
+entity "Categories" as categories {
+    * Id : uniqueidentifier <<PK>>
+    --
+    * Name : nvarchar(100) <<unique>>
+    Description : nvarchar(255)
+    * CreatedAt : datetime2
+    * UpdatedAt : datetime2
+}
+
+entity "Courses" as courses {
+    * Id : uniqueidentifier <<PK>>
+    --
+    * Title : nvarchar(200)
+    Description : nvarchar(max)
+    * Price : decimal(18,2)
+    * Status : int
+    DurationInWeeks : int
+    ImageUrl : nvarchar(max)
+    StartDate : datetime2
+    * InstructorId : uniqueidentifier <<FK>>
+    * CreatedAt : datetime2
+    * UpdatedAt : datetime2
+}
+
+entity "CourseCategories" as course_categories {
+    * CourseId : uniqueidentifier <<PK, FK>>
+    * CategoryId : uniqueidentifier <<PK, FK>>
+}
+
+entity "Sections" as sections {
+    * Id : uniqueidentifier <<PK>>
+    --
+    * CourseId : uniqueidentifier <<FK>>
+    * Title : nvarchar(150)
+    * [Order] : int
+    * Status : int
+    * CreatedAt : datetime2
+    * UpdatedAt : datetime2
+}
+
+entity "Lessons" as lessons {
+    * Id : uniqueidentifier <<PK>>
+    --
+    * SectionId : uniqueidentifier <<FK>>
+    * Title : nvarchar(150)
+    * [Order] : int
+    * Status : int
+    * CreatedAt : datetime2
+    * UpdatedAt : datetime2
+}
+
+entity "ContentBlocks" as content_blocks {
+    * Id : uniqueidentifier <<PK>>
+    --
+    * LessonId : uniqueidentifier <<FK>>
+    * [Order] : int
+    * ContentType : nvarchar(50) <<Discriminator TPH>>
+    Text : nvarchar(max)
+    VideoUrl : nvarchar(max)
+    ThumbnailUrl : nvarchar(max)
+    Transcription : nvarchar(max)
+    DurationMinutes : int
+    * CreatedAt : datetime2
+    * UpdatedAt : datetime2
+}
+
+entity "Enrollments" as enrollments {
+    * Id : uniqueidentifier <<PK>>
+    --
+    * UserId : uniqueidentifier <<FK>>
+    * CourseId : uniqueidentifier <<FK>>
+    * EnrolledAt : datetime2
+    * ProgressPercentage : int
+}
+
+entity "Reviews" as reviews {
+    * Id : uniqueidentifier <<PK>>
+    --
+    * UserId : uniqueidentifier <<FK>>
+    * CourseId : uniqueidentifier <<FK>>
+    * Rating : tinyint
+    Comment : nvarchar(500)
+    * CreatedAt : datetime2
+    * UpdatedAt : datetime2
+}
+
+users ||--o{ courses : "InstructorId"
+courses ||--|{ course_categories : "has"
+categories ||--|{ course_categories : "categorizes"
+courses ||--o{ sections : "has (CASCADE)"
+sections ||--o{ lessons : "has (CASCADE)"
+lessons ||--o{ content_blocks : "has (CASCADE)"
+
+users ||--o{ enrollments : "UserId"
+courses ||--o{ enrollments : "CourseId"
+
+users ||--o{ reviews : "UserId"
+courses ||--o{ reviews : "CourseId"
+
+@enduml
