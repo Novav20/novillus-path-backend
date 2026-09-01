@@ -2,10 +2,20 @@ namespace SourceGuild.Domain.Entities.Content;
 
 public abstract class ContentBlock
 {
-    public Guid Id { get; init; } = Guid.NewGuid();
-    public int Order { get; set; }
-    public Guid LessonId { get; set; }
-    public Lesson Lesson { get; set; } = null!;
-    public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
-    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+    protected ContentBlock() { }
+
+    public Guid Id { get; protected set; }
+    public int Order { get; protected set; }
+    
+    public Guid LessonId { get; protected set; }
+    public Lesson Lesson { get; protected set; } = null!;
+
+    public DateTime CreatedAt { get; protected set; }
+    public DateTime UpdatedAt { get; protected set; }
+
+    internal void SetOrder(int newOrder)
+    {
+        Order = newOrder;
+        UpdatedAt = DateTime.UtcNow;
+    }
 }

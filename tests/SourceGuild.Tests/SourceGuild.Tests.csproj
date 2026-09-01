@@ -23,8 +23,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\SourceGuild.Domain\SourceGuild.Domain.csproj" />
-    <ProjectReference Include="..\..\src\SourceGuild.Application\SourceGuild.Application.csproj" />
-    <ProjectReference Include="..\..\src\SourceGuild.Infrastructure\SourceGuild.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

@@ -16,8 +16,6 @@
     <Using Include="System.ComponentModel.DataAnnotations" />
     <Using Include="System.ComponentModel.DataAnnotations.Schema" />
     <Using Include="Microsoft.AspNetCore.Identity" />
-    <Using Include="SourceGuild.Domain.Enums" />
-    <Using Include="SourceGuild.Domain.Entities.Content" />
   </ItemGroup>
 
 </Project>
