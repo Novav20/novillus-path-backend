@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using SourceGuild.Domain.Enums;
 
 namespace SourceGuild.Application.DTOs.Course;
 

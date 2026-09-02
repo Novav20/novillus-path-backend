@@ -1,13 +1,9 @@
-using System.Linq.Expressions;
+using SourceGuild.Domain.Entities;
 
 namespace SourceGuild.Application.Interfaces.Persistence;
 
 public interface ILessonRepository : IRepository<Lesson>
 {
-    Task<Lesson?> GetLessonWithContentBlocksAsync(Guid lessonId, CancellationToken cancellationToken);
-    Task<IReadOnlyList<Lesson>> GetLessonsBySectionIdAsync(Guid sectionId, bool includeContentBlocks, CancellationToken cancellationToken);
-    Task<IReadOnlyList<Lesson>> GetFilteredLessonsAsync(
-    Expression<Func<Lesson, bool>> filterPredicate,
-    bool includeContentBlocks,
-    CancellationToken cancellationToken);
+    Task<Lesson?> GetWithContentBlocksAsync(Guid lessonId, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<Lesson>> GetBySectionIdAsync(Guid sectionId, CancellationToken cancellationToken = default);
 }

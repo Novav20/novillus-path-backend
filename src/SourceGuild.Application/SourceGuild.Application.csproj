@@ -11,7 +11,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="13.0.1" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
   </ItemGroup>
 
@@ -20,15 +19,6 @@
     <Using Include="System.Collections.Generic" />
     <Using Include="System.Linq" />
     <Using Include="System.Threading.Tasks" />
-    <Using Include="SourceGuild.Domain.Entities" />
-    <Using Include="SourceGuild.Domain.Enums" />
-    <Using Include="SourceGuild.Application.DTOs.Common" />
-    <Using Include="SourceGuild.Application.Exceptions" />
-    <Using Include="SourceGuild.Application.Helpers" />
-    <Using Include="SourceGuild.Application.Interfaces.Common" />
-    <Using Include="SourceGuild.Application.Interfaces.Persistence" />
-    <Using Include="SourceGuild.Application.Interfaces.Services" />
-    <Using Include="AutoMapper" />
     <Using Include="FluentValidation" />
   </ItemGroup>
 

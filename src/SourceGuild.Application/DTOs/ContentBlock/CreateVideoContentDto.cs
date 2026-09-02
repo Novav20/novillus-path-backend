@@ -1,3 +1,5 @@
+using SourceGuild.Domain.Enums;
+
 namespace SourceGuild.Application.DTOs.ContentBlock;
 
 public record CreateVideoContentDto : CreateContentBlockBaseDto

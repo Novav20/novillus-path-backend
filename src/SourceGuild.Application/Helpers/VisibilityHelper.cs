@@ -1,3 +1,7 @@
+using SourceGuild.Application.Interfaces.Common;
+using SourceGuild.Domain.Entities;
+using SourceGuild.Domain.Enums;
+
 namespace SourceGuild.Application.Helpers;
 
 public static class VisibilityHelper

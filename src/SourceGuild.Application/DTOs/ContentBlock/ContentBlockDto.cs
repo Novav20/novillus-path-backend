@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using SourceGuild.Domain.Enums;
 
 namespace SourceGuild.Application.DTOs.ContentBlock;
 

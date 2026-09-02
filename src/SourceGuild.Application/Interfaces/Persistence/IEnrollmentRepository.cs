@@ -1,7 +1,9 @@
+using SourceGuild.Domain.Entities;
+
 namespace SourceGuild.Application.Interfaces.Persistence;
 
 public interface IEnrollmentRepository : IRepository<Enrollment>
 {
-    Task<Enrollment?> GetByUserIdAndCourseIdAsync(Guid userId, Guid courseId, CancellationToken cancellationToken = default);
-    Task<IReadOnlyList<Enrollment>> GetEnrollmentsByUserIdAsync(Guid userId, bool includeCourseDetails, CancellationToken cancellationToken);
+    Task<Enrollment?> GetByUserAndCourseAsync(Guid userId, Guid courseId, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<Enrollment>> GetByUserIdAsync(Guid userId, bool includeCourseDetails = true, CancellationToken cancellationToken = default);
 }
