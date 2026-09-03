@@ -1,4 +1,9 @@
 using Microsoft.Data.SqlClient;
+using SourceGuild.Application.Interfaces.Identity;
+using SourceGuild.Application.Interfaces.Persistence;
+using SourceGuild.Infrastructure.Identity;
+using SourceGuild.Infrastructure.Persistence;
+using SourceGuild.Infrastructure.Persistence.Repositories;
 
 namespace SourceGuild.Infrastructure.Extensions;
 

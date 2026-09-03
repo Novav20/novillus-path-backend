@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using SourceGuild.Application.DTOs.User;
+using SourceGuild.Application.Interfaces.Identity;
+using SourceGuild.Domain.Entities;
 
 namespace SourceGuild.Infrastructure.Identity;
 

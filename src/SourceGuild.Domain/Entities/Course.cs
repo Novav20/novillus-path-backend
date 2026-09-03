@@ -15,9 +15,9 @@ public class Course
 
     // Factory method para creación controlada
     public static Result<Course> Create(
-        string title, 
-        Guid instructorId, 
-        decimal price = 0, 
+        string title,
+        Guid instructorId,
+        decimal price = 0,
         string? description = null,
         int? durationInWeeks = null,
         string? imageUrl = null,
@@ -129,7 +129,7 @@ public class Course
 
         int nextOrder = _sections.Count; // Mantiene el orden 0, 1, 2... sin huecos
         var sectionResult = Section.Create(Id, title, nextOrder);
-        
+
         if (sectionResult.IsFailure)
             return Result<Section>.Failure(sectionResult.Error);
 
@@ -146,7 +146,7 @@ public class Course
             return Result.Failure(Error.NotFound("Section.NotFound", "La sección no existe en este curso."));
 
         _sections.Remove(section);
-        
+
         // Re-indexar el orden de las secciones restantes para no dejar huecos
         for (int i = 0; i < _sections.Count; i++)
         {
@@ -155,5 +155,14 @@ public class Course
 
         UpdatedAt = DateTime.UtcNow;
         return Result.Success();
+    }
+
+    public void AddCategory(Category category)
+    {
+        if (!_categories.Any(c => c.Id == category.Id))
+        {
+            _categories.Add(category);
+            UpdatedAt = DateTime.UtcNow;
+        }
     }
 }

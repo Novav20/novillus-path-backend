@@ -1,7 +1,6 @@
 using FluentAssertions;
 using SourceGuild.Domain.Entities;
 using SourceGuild.Domain.Enums;
-using Xunit;
 
 namespace SourceGuild.Tests.Domain.Entities;
 

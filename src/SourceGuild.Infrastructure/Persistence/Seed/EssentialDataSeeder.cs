@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using SourceGuild.Application.Constants;
+using SourceGuild.Domain.Entities;
 
 namespace SourceGuild.Infrastructure.Persistence.Seed;
 

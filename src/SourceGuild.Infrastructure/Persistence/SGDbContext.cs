@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using SourceGuild.Domain.Entities;
 using SourceGuild.Domain.Entities.Content;
 using SourceGuild.Domain.Enums;
 

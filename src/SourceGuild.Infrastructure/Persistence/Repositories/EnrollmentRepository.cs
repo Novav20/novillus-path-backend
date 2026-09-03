@@ -1,14 +1,17 @@
+using SourceGuild.Application.Interfaces.Persistence;
+using SourceGuild.Domain.Entities;
+
 namespace SourceGuild.Infrastructure.Persistence.Repositories;
 
 public class EnrollmentRepository(SGDbContext context) : EfRepository<Enrollment>(context), IEnrollmentRepository
 {
-    public async Task<Enrollment?> GetByUserIdAndCourseIdAsync(Guid userId, Guid courseId, CancellationToken cancellationToken)
+    public async Task<Enrollment?> GetByUserAndCourseAsync(Guid userId, Guid courseId, CancellationToken cancellationToken = default)
     {
         return await _context.Enrollments
             .FirstOrDefaultAsync(e => e.UserId == userId && e.CourseId == courseId, cancellationToken);
     }
 
-    public async Task<IReadOnlyList<Enrollment>> GetEnrollmentsByUserIdAsync(Guid userId, bool includeCourseDetails, CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<Enrollment>> GetByUserIdAsync(Guid userId, bool includeCourseDetails = true, CancellationToken cancellationToken = default)
     {
         IQueryable<Enrollment> query = _context.Enrollments.Where(e => e.UserId == userId);
 
@@ -17,7 +20,9 @@ public class EnrollmentRepository(SGDbContext context) : EfRepository<Enrollment
             query = query.Include(e => e.Course)
                 .ThenInclude(c => c.Categories);
         }
-        query = query.OrderByDescending(e => e.EnrolledAt);
-        return await query.AsNoTracking().ToListAsync(cancellationToken);
+
+        return await query.OrderByDescending(e => e.EnrolledAt)
+                          .AsNoTracking()
+                          .ToListAsync(cancellationToken);
     }
 }

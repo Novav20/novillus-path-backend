@@ -1,3 +1,6 @@
+using SourceGuild.Application.Interfaces.Persistence;
+using SourceGuild.Infrastructure.Persistence.Repositories;
+
 namespace SourceGuild.Infrastructure.Persistence;
 
 public class UnitOfWork(SGDbContext context) : IUnitOfWork

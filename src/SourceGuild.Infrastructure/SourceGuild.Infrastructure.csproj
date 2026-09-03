@@ -29,12 +29,6 @@
     <Using Include="Microsoft.EntityFrameworkCore" />
     <Using Include="Microsoft.Extensions.Configuration" />
     <Using Include="Microsoft.Extensions.DependencyInjection" />
-    <Using Include="SourceGuild.Application.Interfaces.Persistence" />
-    <Using Include="SourceGuild.Domain.Entities" />
-    <Using Include="SourceGuild.Infrastructure.Persistence" />
-    <Using Include="SourceGuild.Infrastructure.Persistence.Repositories" />
-    <Using Include="SourceGuild.Application.Interfaces.Identity" />
-    <Using Include="SourceGuild.Infrastructure.Identity" />
   </ItemGroup>
 
 </Project>

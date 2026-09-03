@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
-using SourceGuild.Domain.Entities.Content;
-using SourceGuild.Domain.Enums;
+using Microsoft.EntityFrameworkCore;
+using SourceGuild.Domain.Entities;
 
 namespace SourceGuild.Infrastructure.Persistence.Seed;
 
@@ -8,21 +8,21 @@ public static class TestDataSeeder
 {
     public static async Task SeedDataAsync(SGDbContext context, UserManager<ApplicationUser> userManager)
     {
-        if (await context.Courses.AnyAsync()) return; // Data already seeded
+        if (await context.Courses.AnyAsync()) return; // Base de datos ya poblada
 
-        // Seed Users (Instructors and Students)
+        // 1. Usuarios (Instructores y Estudiantes)
         var (instructor1, instructor2, student1, student2, student3) = await SeedUsersAsync(userManager);
 
-        // Seed Categories
+        // 2. Categorías
         var (catDev, catDesign, catMarketing) = await SeedCategoriesAsync(context);
 
-        // Seed Courses
+        // 3. Cursos (Construidos a través de la raíz de agregado)
         var (course1, course2, course3) = await SeedCoursesAsync(context, instructor1, instructor2, catDev, catDesign, catMarketing);
 
-        // Seed Enrollments
+        // 4. Matrículas (Enrollments)
         await SeedEnrollmentsAsync(context, course1, course2, student1, student2, student3);
 
-        // Seed Reviews
+        // 5. Reseñas (Reviews)
         await SeedReviewsAsync(context, course1, course2, student1, student2);
     }
 
@@ -54,90 +54,93 @@ public static class TestDataSeeder
 
     private static async Task<(Category, Category, Category)> SeedCategoriesAsync(SGDbContext context)
     {
-        var catDev = new Category { Name = "Development", Description = "Courses about software development" };
-        var catDesign = new Category { Name = "Design", Description = "Courses about design" };
-        var catMarketing = new Category { Name = "Marketing", Description = "Courses about marketing" };
+        var catDev = Category.Create("Development", "Courses about software development").Value;
+        var catDesign = Category.Create("Design", "Courses about design").Value;
+        var catMarketing = Category.Create("Marketing", "Courses about marketing").Value;
 
-        context.Categories.AddRange(catDev, catDesign, catMarketing);
+        await context.Categories.AddRangeAsync(catDev, catDesign, catMarketing);
         await context.SaveChangesAsync();
         return (catDev, catDesign, catMarketing);
     }
 
-    private static async Task<(Course, Course, Course)> SeedCoursesAsync(SGDbContext context, ApplicationUser instructor1, ApplicationUser instructor2, Category catDev, Category catDesign, Category catMarketing)
+    private static async Task<(Course, Course, Course)> SeedCoursesAsync(
+        SGDbContext context,
+        ApplicationUser instructor1,
+        ApplicationUser instructor2,
+        Category catDev,
+        Category catDesign,
+        Category catMarketing)
     {
-        var course1 = new Course
-        {
-            Title = "Ultimate C# Masterclass",
-            Description = "A comprehensive course on C# and .NET",
-            Price = 49.99m,
-            Status = CourseStatus.Published,
-            InstructorId = instructor1.Id,
-            Categories = new List<Category> { catDev },
-            Sections = new List<Section>
-            {
-                new Section { Title = "Introduction", Order = 1, Status = SectionStatus.Published, Lessons = new List<Lesson>
-                {
-                    new Lesson { Title = "Welcome", Order = 1, Status = LessonStatus.Published, ContentBlocks = new List<ContentBlock>
-                    {
-                        new TextContent { Order = 1, Text = "Welcome to the course!" }
-                    }}
-                }}
-            }
-        };
+        // Curso 1: C# Masterclass (Publicado con Secciones y Lecciones)
+        var course1 = Course.Create(
+            "Ultimate C# Masterclass",
+            instructor1.Id,
+            49.99m,
+            "A comprehensive course on C# and .NET").Value;
 
-        var course2 = new Course
-        {
-            Title = "Web Design for Beginners",
-            Description = "Learn the basics of web design",
-            Price = 29.99m,
-            Status = CourseStatus.Published,
-            InstructorId = instructor2.Id,
-            Categories = new List<Category> { catDesign },
-            Sections = new List<Section>
-            {
-                new Section { Title = "HTML Basics", Order = 1, Status = SectionStatus.Published, Lessons = new List<Lesson>
-                {
-                    new Lesson { Title = "HTML Tags", Order = 1, Status = LessonStatus.Published, ContentBlocks = new List<ContentBlock>
-                    {
-                        new VideoContent { Order = 1, VideoUrl = "http://example.com/video.mp4" }
-                    }}
-                }}
-            }
-        };
+        course1.AddCategory(catDev);
+        var sec1 = course1.AddSection("Introduction").Value;
+        var lesson1 = sec1.AddLesson("Welcome").Value;
+        lesson1.AddTextContent("Welcome to the course!");
+        course1.Publish();
 
-        var course3 = new Course
-        {
-            Title = "Digital Marketing 101",
-            Description = "Your first step into digital marketing",
-            Price = 39.99m,
-            Status = CourseStatus.Draft,
-            InstructorId = instructor1.Id,
-            Categories = new List<Category> { catMarketing }
-        };
+        // Curso 2: Web Design (Publicado con Video)
+        var course2 = Course.Create(
+            "Web Design for Beginners",
+            instructor2.Id,
+            29.99m,
+            "Learn the basics of web design").Value;
 
-        context.Courses.AddRange(course1, course2, course3);
+        course2.AddCategory(catDesign);
+        var sec2 = course2.AddSection("HTML Basics").Value;
+        var lesson2 = sec2.AddLesson("HTML Tags").Value;
+        lesson2.AddVideoContent("https://cdn.sourceguild.com/html-tags.mp4", durationMinutes: 15);
+        course2.Publish();
+
+        // Curso 3: Digital Marketing (Borrador sin publicar)
+        var course3 = Course.Create(
+            "Digital Marketing 101",
+            instructor1.Id,
+            39.99m,
+            "Your first step into digital marketing").Value;
+
+        course3.AddCategory(catMarketing);
+
+        await context.Courses.AddRangeAsync(course1, course2, course3);
         await context.SaveChangesAsync();
+
         return (course1, course2, course3);
     }
 
-    private static async Task SeedEnrollmentsAsync(SGDbContext context, Course course1, Course course2, ApplicationUser student1, ApplicationUser student2, ApplicationUser student3)
+    private static async Task SeedEnrollmentsAsync(
+        SGDbContext context,
+        Course course1,
+        Course course2,
+        ApplicationUser student1,
+        ApplicationUser student2,
+        ApplicationUser student3)
     {
-        context.Enrollments.AddRange(
-            new Enrollment { CourseId = course1.Id, UserId = student1.Id },
-            new Enrollment { CourseId = course1.Id, UserId = student2.Id },
-            new Enrollment { CourseId = course2.Id, UserId = student1.Id },
-            new Enrollment { CourseId = course2.Id, UserId = student3.Id }
-        );
+        var e1 = Enrollment.Create(student1.Id, course1.Id).Value;
+        var e2 = Enrollment.Create(student2.Id, course1.Id).Value;
+        var e3 = Enrollment.Create(student1.Id, course2.Id).Value;
+        var e4 = Enrollment.Create(student3.Id, course2.Id).Value;
+
+        await context.Enrollments.AddRangeAsync(e1, e2, e3, e4);
         await context.SaveChangesAsync();
     }
 
-    private static async Task SeedReviewsAsync(SGDbContext context, Course course1, Course course2, ApplicationUser student1, ApplicationUser student2)
+    private static async Task SeedReviewsAsync(
+        SGDbContext context,
+        Course course1,
+        Course course2,
+        ApplicationUser student1,
+        ApplicationUser student2)
     {
-        context.Reviews.AddRange(
-            new Review { CourseId = course1.Id, UserId = student1.Id, Rating = 5, Comment = "Great course!" },
-            new Review { CourseId = course1.Id, UserId = student2.Id, Rating = 4, Comment = "Very informative." },
-            new Review { CourseId = course2.Id, UserId = student1.Id, Rating = 3, Comment = "A bit basic." }
-        );
+        var r1 = Review.Create(student1.Id, course1.Id, 5, "Great course!").Value;
+        var r2 = Review.Create(student2.Id, course1.Id, 4, "Very informative.").Value;
+        var r3 = Review.Create(student1.Id, course2.Id, 3, "A bit basic.").Value;
+
+        await context.Reviews.AddRangeAsync(r1, r2, r3);
         await context.SaveChangesAsync();
     }
 }

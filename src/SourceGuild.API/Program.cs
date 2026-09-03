@@ -1,5 +1,4 @@
 using Serilog;
-using Serilog.Events;
 using SourceGuild.API.Extensions;
 using SourceGuild.API.Middleware;
 using SourceGuild.Application.Extensions;
