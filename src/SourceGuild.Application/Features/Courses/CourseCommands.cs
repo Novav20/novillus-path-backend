@@ -18,17 +18,18 @@ public class CourseCommands(
 {
     public async Task<Result<CourseDto>> CreateAsync(CreateCourseDto dto, CancellationToken cancellationToken = default)
     {
-        var instructorId = currentUserService.UserId;
-        if (!instructorId.HasValue || instructorId == Guid.Empty)
+        if (!currentUserService.UserId.HasValue || currentUserService.UserId.Value == Guid.Empty)
             return Result<CourseDto>.Failure(Error.Validation("Auth.Unauthorized", "Usuario no autenticado."));
 
+        var instructorId = currentUserService.UserId.Value;
+
         var courseResult = Course.Create(
-            dto.Title, 
-            instructorId.Value, 
-            dto.Price, 
-            dto.Description, 
-            dto.DurationInWeeks, 
-            dto.ImageUrl, 
+            dto.Title,
+            instructorId,
+            dto.Price,
+            dto.Description,
+            dto.DurationInWeeks,
+            dto.ImageUrl,
             dto.StartDate);
 
         if (courseResult.IsFailure)
@@ -119,9 +120,9 @@ public class CourseCommands(
     }
 
     public async Task<Result<LessonDto>> AddLessonToSectionAsync(
-        Guid courseId, 
-        Guid sectionId, 
-        CreateLessonDto dto, 
+        Guid courseId,
+        Guid sectionId,
+        CreateLessonDto dto,
         CancellationToken cancellationToken = default)
     {
         var course = await courseRepository.GetWithDetailsAsync(courseId, cancellationToken);
