@@ -1,4 +1,5 @@
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using SourceGuild.Application.Interfaces.Identity;
 using SourceGuild.Application.Interfaces.Persistence;
 using SourceGuild.Infrastructure.Identity;
@@ -11,30 +12,45 @@ public static class InfrastructureServiceRegistration
 {
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
     {
-
         var connectionStringTemplate = configuration.GetConnectionString("SourceGuildDbConnection_Template");
         if (string.IsNullOrEmpty(connectionStringTemplate))
         {
             throw new InvalidOperationException("Connection string template 'SourceGuildDbConnection_Template' not found.");
         }
+
         var dbUserId = configuration["DbCredentials:UserId"];
         var dbPassword = configuration["DbCredentials:Password"];
         if (string.IsNullOrEmpty(dbUserId) || string.IsNullOrEmpty(dbPassword))
         {
-            // Log this or handle as appropriate for your environment
             throw new InvalidOperationException("Database User ID or Password not found in configuration (expected in user secrets for development).");
         }
+
         var builder = new SqlConnectionStringBuilder(connectionStringTemplate)
         {
             UserID = dbUserId,
-            Password = dbPassword
+            Password = dbPassword,
+            TrustServerCertificate = true,
+            Encrypt = false // Desactiva TLS estricto para el contenedor local en Linux
         };
         var connectionString = builder.ConnectionString;
 
-        services.AddDbContext<SGDbContext>(options => options.UseSqlServer(connectionString));
+        // 1. Configuración de DbContext con Query Splitting (mitiga explosión cartesiana)
+        services.AddDbContext<SGDbContext>(options =>
+            options.UseSqlServer(connectionString, sqlOptions =>
+                sqlOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)));
+
+        // 2. Repositorio Genérico Base
+        services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
+
+        // 3. Repositorios de Agregados y Entidades
         services.AddScoped<ICourseRepository, CourseRepository>();
         services.AddScoped<ICategoryRepository, CategoryRepository>();
         services.AddScoped<ISectionRepository, SectionRepository>();
+        services.AddScoped<ILessonRepository, LessonRepository>();
+        services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
+        services.AddScoped<IReviewRepository, ReviewRepository>();
+
+        // 4. Unit of Work y Servicios de Identidad
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<ITokenGeneratorService, TokenGeneratorService>();

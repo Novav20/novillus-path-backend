@@ -1,54 +1,52 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
-# Ensure a SQL Server container is running (support renamed container)
-CONTAINER_NAME=""
-if [ "$(docker ps -q -f name=sourceguild-sql)" != "" ]; then
-  CONTAINER_NAME=sourceguild-sql
-elif [ "$(docker ps -q -f name=sqlserver)" != "" ]; then
-  CONTAINER_NAME=sqlserver
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+cd "$REPO_ROOT"
+
+CONTAINER_NAME="sourceguild-sqlserver"
+
+echo "Verificando contenedor SQL Server ($CONTAINER_NAME)..."
+
+# 1. Asegurar que el contenedor esté corriendo en Docker
+if ! docker ps -q -f name="^${CONTAINER_NAME}$" | grep -q .; then
+    echo "Contenedor no detectado activo. Levantando servicios vía docker compose..."
+    docker compose up -d
 fi
 
-if [ -z "$CONTAINER_NAME" ]; then
-  echo "No existing SQL Server container found. Starting via docker-compose..."
-  docker-compose up -d
-  # try to pick up the container name we just started
-  if [ "$(docker ps -q -f name=sourceguild-sql)" != "" ]; then
-    CONTAINER_NAME=sourceguild-sql
-  fi
-fi
-
-if [ -n "$CONTAINER_NAME" ]; then
-  # If the container exists but is stopped, start it
-  if [ "$(docker ps -q -f name=$CONTAINER_NAME)" = "" ]; then
-    echo "Starting $CONTAINER_NAME container..."
-    docker start $CONTAINER_NAME || true
-  else
-    echo "$CONTAINER_NAME container is already running."
-  fi
-fi
-
-# Check for dotnet-ef and install if missing
+# 2. Verificar herramienta dotnet-ef
 if ! dotnet ef --version >/dev/null 2>&1; then
-  echo "dotnet-ef not found globally. Attempting to install dotnet-ef tool (user scope)..."
-  dotnet tool install --global dotnet-ef || true
-  export PATH="$PATH:$HOME/.dotnet/tools"
+    echo "Instalando herramienta global dotnet-ef..."
+    dotnet tool install --global dotnet-ef || true
+    export PATH="$PATH:$HOME/.dotnet/tools"
 fi
 
-# Prompt for migration name
-read -p "Enter migration name (or press Enter to use 'InitialCreate'): " MIGRATION_NAME
-if [ -z "$MIGRATION_NAME" ]; then
-  MIGRATION_NAME="InitialCreate"
+# 3. Preguntar acción
+echo ""
+echo "Seleccione una opción:"
+echo "1) Aplicar migraciones existentes (database update)"
+echo "2) Crear nueva migración y aplicar (migrations add + update)"
+read -p "Opción [1/2, default: 1]: " OPTION
+OPTION=${OPTION:-1}
+
+if [[ "$OPTION" == "2" ]]; then
+    read -p "Ingrese el nombre de la nueva migración: " MIGRATION_NAME
+    if [[ -z "$MIGRATION_NAME" ]]; then
+        echo "Error: El nombre de la migración no puede estar vacío."
+        exit 1
+    fi
+
+    echo "Generando migración '$MIGRATION_NAME'..."
+    dotnet ef migrations add "$MIGRATION_NAME" \
+        --project src/SourceGuild.Infrastructure \
+        --startup-project src/SourceGuild.API
 fi
 
-# Run dotnet ef migrations add
-if [ -z "$MIGRATION_NAME" ]; then
-  echo "Migration name cannot be empty. Exiting."
-  exit 1
-fi
+echo "Aplicando migraciones a la base de datos..."
+dotnet ef database update \
+    --project src/SourceGuild.Infrastructure \
+    --startup-project src/SourceGuild.API
 
-echo "Adding migration '$MIGRATION_NAME' to SourceGuild.Infrastructure (startup: SourceGuild.API)"
-dotnet ef migrations add "$MIGRATION_NAME" --project SourceGuild.Infrastructure --startup-project SourceGuild.API || true
-
-# Run dotnet ef database update
-echo "Applying migrations to database (update)..."
-dotnet ef database update --project SourceGuild.Infrastructure --startup-project SourceGuild.API || true
+echo "Operación de base de datos completada exitosamente."

@@ -1,13 +1,15 @@
 services:
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
-    container_name: sourceguild-sql
+    container_name: sourceguild-sqlserver
+    restart: always
     environment:
-      - ACCEPT_EULA=Y
-      - SA_PASSWORD=${SA_PASSWORD}
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
     ports:
-      - "1433:1433"
+      - "${MSSQL_PORT}:1433"
     volumes:
       - sqlvolume:/var/opt/mssql
+
 volumes:
   sqlvolume:

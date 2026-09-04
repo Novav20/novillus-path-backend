@@ -12,7 +12,7 @@ using SourceGuild.Infrastructure.Persistence;
 namespace SourceGuild.Infrastructure.Migrations
 {
     [DbContext(typeof(SGDbContext))]
-    [Migration("20251222164612_InitialCreate")]
+    [Migration("20260904172327_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
