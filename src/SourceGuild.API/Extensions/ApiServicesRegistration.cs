@@ -1,4 +1,5 @@
 using SourceGuild.API.Services;
+using SourceGuild.Application.Interfaces.Common;
 
 namespace SourceGuild.API.Extensions;
 

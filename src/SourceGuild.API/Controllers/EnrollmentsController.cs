@@ -1,72 +1,36 @@
-namespace SourceGuild.API.Controllers
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using SourceGuild.API.Extensions;
+using SourceGuild.Application.Constants;
+using SourceGuild.Application.Features.Enrollments;
+
+namespace SourceGuild.API.Controllers;
+
+[Route("api/courses/{courseId:guid}")]
+[ApiController]
+[Produces("application/json")]
+public class EnrollmentsController(EnrollmentFeatures enrollmentFeatures) : ControllerBase
 {
-    /// <summary>
-    /// API controller for managing course enrollments.
-    /// </summary>
-    [Route("api/courses/{courseId}")]
-    [ApiController]
-    [Produces("application/json")]
-    public class EnrollmentsController(IEnrollmentService enrollmentService, ICurrentUserService currentUserService) : ControllerBase
+    [HttpPost("enroll")]
+    [Authorize(Roles = Roles.Student + "," + Roles.Admin)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> Enroll([FromRoute] Guid courseId, CancellationToken cancellationToken)
     {
-        private readonly IEnrollmentService _enrollmentService = enrollmentService;
-        private readonly ICurrentUserService _currentUserService = currentUserService;
+        var result = await enrollmentFeatures.EnrollAsync(courseId, cancellationToken);
+        return result.ToActionResult();
+    }
 
-        /// <summary>
-        /// Enrolls the current user in a specified course.
-        /// </summary>
-        /// <param name="courseId">The ID of the course to enroll in.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>No content.</returns>
-        [HttpPost("enroll")]
-        [Authorize(Roles = Roles.Student + "," + Roles.Admin)] 
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)] 
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)] 
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]  
-        [ProducesResponseType(StatusCodes.Status404NotFound)]  
-        public async Task<IActionResult> Enroll([FromRoute] Guid courseId, CancellationToken cancellationToken = default)
-        {
-            var userIdToEnroll = _currentUserService.UserId;
-
-            if (!userIdToEnroll.HasValue)
-            {
-                // This case should ideally not be hit if [Authorize] and ICurrentUserService are working correctly.
-                // It implies an authenticated user somehow doesn't have a UserId claim.
-                return Unauthorized(new ProblemDetails { Title = "Unauthorized", Detail = "User ID could not be determined.", Status = StatusCodes.Status401Unauthorized });
-            }
-
-            // The service method will use its own ICurrentUserService to validate if the
-            // authenticated user (represented by _currentUserService in the service) can
-            // enroll the target userIdToEnroll.Value.
-            await _enrollmentService.EnrollAsync(courseId, userIdToEnroll.Value, cancellationToken);
-            return NoContent();
-        }
-
-        /// <summary>
-        /// Unenrolls the current user from a specified course.
-        /// </summary>
-        /// <param name="courseId">The ID of the course to unenroll from.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>No content.</returns>
-        [HttpDelete("unenroll")]
-        [Authorize(Roles = Roles.Student + "," + Roles.Admin)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Unenroll(
-    [FromRoute] Guid courseId,
-    CancellationToken cancellationToken = default)
-        {
-            var userIdToUnenroll = _currentUserService.UserId;
-
-            if (!userIdToUnenroll.HasValue)
-            {
-                return Unauthorized(new ProblemDetails { Title = "Unauthorized", Detail = "User ID could not be determined.", Status = StatusCodes.Status401Unauthorized });
-            }
-
-            await _enrollmentService.UnenrollAsync(courseId, userIdToUnenroll.Value, cancellationToken);
-            return NoContent();
-        }
+    [HttpPatch("progress")]
+    [Authorize(Roles = Roles.Student)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdateProgress([FromRoute] Guid courseId, [FromBody] int progressPercentage, CancellationToken cancellationToken)
+    {
+        var result = await enrollmentFeatures.UpdateProgressAsync(courseId, progressPercentage, cancellationToken);
+        return result.ToActionResult();
     }
 }

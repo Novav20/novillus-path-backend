@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using SourceGuild.Application.Interfaces.Common;
 
 namespace SourceGuild.API.Services;
 
