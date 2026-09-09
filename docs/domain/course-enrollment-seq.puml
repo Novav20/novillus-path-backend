@@ -1,0 +1,88 @@
+@startuml "Course Enrollment Sequence"
+autonumber
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam BoxPadding 10
+skinparam ParticipantPadding 10
+
+actor "Student (Client)" as Client
+box "Presentation Layer (API)" #EBF5FB
+    participant "EnrollmentsController" as Controller
+end box
+
+box "Application Layer (Vertical Slices)" #FEF9E7
+    participant "EnrollmentFeatures" as Features
+    participant "ICurrentUserService" as CurrentUser
+    participant "ICourseRepository" as CourseRepo
+    participant "IEnrollmentRepository" as EnrollRepo
+    participant "IUnitOfWork" as UoW
+end box
+
+box "Domain Layer (Aggregates)" #EAFAF1
+    participant "Course (Root)" as CourseEntity
+    participant "Enrollment (Root)" as EnrollmentEntity
+end box
+
+Client -> Controller: POST /api/courses/{courseId}/enroll
+activate Controller
+
+Controller -> Features: EnrollAsync(courseId, ct)
+activate Features
+
+Features -> CurrentUser: UserId
+activate CurrentUser
+CurrentUser --> Features: Guid userId (or null)
+deactivate CurrentUser
+
+alt User not authenticated (userId == null)
+    Features --> Controller: Result.Failure(Auth.Unauthorized)
+    Controller --> Client: 401 Unauthorized (ProblemDetails)
+end
+
+Features -> CourseRepo: GetByIdAsync(courseId, ct)
+activate CourseRepo
+CourseRepo --> Features: Course entity (or null)
+deactivate CourseRepo
+
+alt Course does not exist
+    Features --> Controller: Result.Failure(Course.NotFound)
+    Controller --> Client: 404 Not Found (ProblemDetails)
+end
+
+alt Course is not Published (Status != Published)
+    Features --> Controller: Result.Failure(Course.NotPublished)
+    Controller --> Client: 400 Bad Request (ProblemDetails)
+end
+
+Features -> EnrollRepo: GetByUserAndCourseAsync(userId, courseId, ct)
+activate EnrollRepo
+EnrollRepo --> Features: Existing Enrollment (or null)
+deactivate EnrollRepo
+
+alt Student already enrolled
+    Features --> Controller: Result.Failure(Enrollment.AlreadyEnrolled)
+    Controller --> Client: 409 Conflict (ProblemDetails)
+end
+
+Features -> EnrollmentEntity: Create(userId, courseId)
+activate EnrollmentEntity
+EnrollmentEntity --> Features: Result<Enrollment>.Success(enrollment)
+deactivate EnrollmentEntity
+
+Features -> EnrollRepo: AddAsync(enrollment, ct)
+activate EnrollRepo
+EnrollRepo --> Features: persisted entity
+deactivate EnrollRepo
+
+Features -> UoW: SaveChangesAsync(ct)
+activate UoW
+UoW --> Features: affected rows (commit)
+deactivate UoW
+
+Features --> Controller: Result<Guid>.Success(enrollment.Id)
+deactivate Features
+
+Controller --> Client: 200 OK { id: enrollmentId }
+deactivate Controller
+
+@enduml

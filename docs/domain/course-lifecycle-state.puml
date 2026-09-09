@@ -1,0 +1,51 @@
+@startuml "Course Lifecycle State Machine"
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+
+skinparam state {
+    BackgroundColor #EBF5FB
+    BorderColor #2E86C1
+    BorderThickness 1.5
+    ArrowColor #154360
+}
+
+[*] --> Draft : Course.Create(title, instructorId, price)
+
+state Draft {
+    Draft : Estado inicial editable
+    Draft : - Se pueden agregar/eliminar Secciones
+    Draft : - Se pueden agregar/eliminar Lecciones
+    Draft : - Se puede modificar el Precio (Price >= 0)
+}
+
+Draft --> Draft : UpdateDetails()\nUpdatePrice()
+Draft --> Draft : AddSection()\nRemoveSection()
+
+state "Published" as Published {
+    Published : Curso visible en el catálogo
+    Published : - Permite matrículas de estudiantes
+    Published : - Habilita calificaciones y reseñas
+    Published : - Protege invariantes de contenido activo
+}
+
+Draft --> Published : Publish()\n[Guard: Sections.Count > 0 && Lessons.Count > 0]
+
+state "Archived" as Archived {
+    Archived : Curso retirado del catálogo
+    Archived : - No admite nuevas matrículas
+    Archived : - Preserva histórico para estudiantes ya inscritos
+}
+
+Published --> Archived : Archive()
+Draft --> Archived : Archive()
+
+Archived --> [*]
+
+note right of Published
+  <b>Invariante DDD de Publicación:</b>
+  Un curso no puede pasar a <b>Published</b>
+  a menos que tenga al menos 1 sección
+  y al menos 1 lección configurada.
+end note
+
+@enduml

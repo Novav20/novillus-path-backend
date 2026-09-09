@@ -4,20 +4,28 @@ skinparam defaultFontSize 12
 skinparam packageStyle rectangle
 skinparam linetype ortho
 
-entity "AspNetUsers" as users {
+entity "AppUsers" as users {
     * Id : uniqueidentifier <<PK>>
     --
     * UserName : nvarchar(256)
     * Email : nvarchar(256)
-    FullName : nvarchar(150)
+    * EmailConfirmed : bit
+    FullName : nvarchar(max)
     ProfilePictureUrl : nvarchar(max)
+    * PasswordHash : nvarchar(max)
+    * SecurityStamp : nvarchar(max)
+    * ConcurrencyStamp : nvarchar(max)
+    * AccessFailedCount : int
+    * LockoutEnabled : bit
+    LockoutEnd : datetimeoffset
+    * TwoFactorEnabled : bit
 }
 
 entity "Categories" as categories {
     * Id : uniqueidentifier <<PK>>
     --
     * Name : nvarchar(100) <<unique>>
-    Description : nvarchar(255)
+    Description : nvarchar(500)
     * CreatedAt : datetime2
     * UpdatedAt : datetime2
 }
@@ -25,7 +33,7 @@ entity "Categories" as categories {
 entity "Courses" as courses {
     * Id : uniqueidentifier <<PK>>
     --
-    * Title : nvarchar(200)
+    * Title : nvarchar(max)
     Description : nvarchar(max)
     * Price : decimal(18,2)
     * Status : int
@@ -37,9 +45,9 @@ entity "Courses" as courses {
     * UpdatedAt : datetime2
 }
 
-entity "CourseCategories" as course_categories {
-    * CourseId : uniqueidentifier <<PK, FK>>
-    * CategoryId : uniqueidentifier <<PK, FK>>
+entity "CategoryCourse" as category_course {
+    * CategoriesId : uniqueidentifier <<PK, FK>>
+    * CoursesId : uniqueidentifier <<PK, FK>>
 }
 
 entity "Sections" as sections {
@@ -69,7 +77,7 @@ entity "ContentBlocks" as content_blocks {
     --
     * LessonId : uniqueidentifier <<FK>>
     * [Order] : int
-    * ContentType : nvarchar(50) <<Discriminator TPH>>
+    * ContentType : nvarchar(13) <<Discriminator TPH>>
     Text : nvarchar(max)
     VideoUrl : nvarchar(max)
     ThumbnailUrl : nvarchar(max)
@@ -94,22 +102,22 @@ entity "Reviews" as reviews {
     * UserId : uniqueidentifier <<FK>>
     * CourseId : uniqueidentifier <<FK>>
     * Rating : tinyint
-    Comment : nvarchar(500)
+    Comment : nvarchar(max)
     * CreatedAt : datetime2
     * UpdatedAt : datetime2
 }
 
-users ||--o{ courses : "InstructorId"
-courses ||--|{ course_categories : "has"
-categories ||--|{ course_categories : "categorizes"
-courses ||--o{ sections : "has (CASCADE)"
-sections ||--o{ lessons : "has (CASCADE)"
-lessons ||--o{ content_blocks : "has (CASCADE)"
+users ||--o{ courses : "InstructorId (NO ACTION)"
+courses ||--|{ category_course : "CoursesId"
+categories ||--|{ category_course : "CategoriesId"
+courses ||--o{ sections : "CourseId (CASCADE)"
+sections ||--o{ lessons : "SectionId (CASCADE)"
+lessons ||--o{ content_blocks : "LessonId (CASCADE)"
 
-users ||--o{ enrollments : "UserId"
-courses ||--o{ enrollments : "CourseId"
+users ||--o{ enrollments : "UserId (NO ACTION)"
+courses ||--o{ enrollments : "CourseId (CASCADE)"
 
-users ||--o{ reviews : "UserId"
-courses ||--o{ reviews : "CourseId"
+users ||--o{ reviews : "UserId (CASCADE)"
+courses ||--o{ reviews : "CourseId (CASCADE)"
 
 @enduml

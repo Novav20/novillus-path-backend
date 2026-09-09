@@ -22,13 +22,18 @@ package "Course Management Aggregate" {
         - ImageUrl: string?
         - StartDate: DateTime?
         - InstructorId: Guid
-        + UpdateDetails(title, description, imageUrl): void
-        + UpdatePrice(price: decimal): void
+        - Categories: List<Category>
+        - Sections: List<Section>
+        - Enrollments: List<Enrollment>
+        - Reviews: List<Review>
+        + {static} Create(title, instructorId, price, ...): Result<Course>
+        + UpdateDetails(title, description, ...): Result
+        + UpdatePrice(price: decimal): Result
         + Publish(): Result
-        + Archive(): void
-        + AddSection(title: string): Section
-        + RemoveSection(sectionId: Guid): void
-        + AddLessonToSection(sectionId: Guid, title: string): Lesson
+        + Archive(): Result
+        + AddCategory(category: Category): void
+        + AddSection(title: string): Result<Section>
+        + RemoveSection(sectionId: Guid): Result
     }
 
     class Section <<Entity>> {
@@ -37,8 +42,12 @@ package "Course Management Aggregate" {
         - Order: int
         - Status: SectionStatus
         - CourseId: Guid
-        + UpdateTitle(title: string): void
-        + AddLesson(title: string): Lesson
+        - Lessons: List<Lesson>
+        ~ {static} Create(courseId, title, order): Result<Section>
+        ~ SetOrder(newOrder: int): void
+        + UpdateTitle(title: string): Result
+        + AddLesson(title: string): Result<Lesson>
+        + RemoveLesson(lessonId: Guid): Result
     }
 
     class Lesson <<Entity>> {
@@ -47,9 +56,13 @@ package "Course Management Aggregate" {
         - Order: int
         - Status: LessonStatus
         - SectionId: Guid
-        + UpdateTitle(title: string): void
-        + AddTextContent(text: string): TextContent
-        + AddVideoContent(url: string, duration: int): VideoContent
+        - ContentBlocks: List<ContentBlock>
+        ~ {static} Create(sectionId, title, order): Result<Lesson>
+        ~ SetOrder(newOrder: int): void
+        + UpdateTitle(title: string): Result
+        + AddTextContent(text: string): Result<TextContent>
+        + AddVideoContent(url: string, duration: int, ...): Result<VideoContent>
+        + RemoveContentBlock(contentBlockId: Guid): Result
     }
 
     abstract class ContentBlock <<Entity>> {
@@ -57,10 +70,14 @@ package "Course Management Aggregate" {
         - Order: int
         - LessonId: Guid
         - CreatedAt: DateTime
+        - UpdatedAt: DateTime
+        ~ SetOrder(newOrder: int): void
     }
 
     class TextContent {
         - Text: string
+        ~ {static} Create(lessonId, text, order): Result<TextContent>
+        + UpdateText(text: string): Result
     }
 
     class VideoContent {
@@ -68,11 +85,13 @@ package "Course Management Aggregate" {
         - ThumbnailUrl: string?
         - Transcription: string?
         - DurationMinutes: int
+        ~ {static} Create(lessonId, url, duration, order, ...): Result<VideoContent>
+        + UpdateDetails(url, duration, ...): Result
     }
 
-    Course "1" *-- "0..*" Section : "contains"
-    Section "1" *-- "0..*" Lesson : "contains"
-    Lesson "1" *-- "0..*" ContentBlock : "contains"
+    Course "1" *-- "0..*" Section : "governs (1..N)"
+    Section "1" *-- "0..*" Lesson : "governs (1..N)"
+    Lesson "1" *-- "0..*" ContentBlock : "governs (1..N)"
     ContentBlock <|-- TextContent
     ContentBlock <|-- VideoContent
 }
@@ -84,8 +103,8 @@ package "Enrollment Aggregate" {
         - CourseId: Guid
         - EnrolledAt: DateTime
         - ProgressPercentage: int
+        + {static} Create(userId, courseId): Result<Enrollment>
         + UpdateProgress(percentage: int): Result
-        + MarkAsCompleted(): void
     }
 }
 
@@ -94,24 +113,28 @@ package "Taxonomy Aggregate" {
         - Id: Guid
         - Name: string
         - Description: string?
-        + Update(name: string, description: string?): void
+        + {static} Create(name, description): Result<Category>
+        + Update(name, description): Result
     }
 }
 
 package "Review Aggregate" {
     class Review <<Aggregate Root>> {
         - Id: Guid
-        - Rating: byte
+        - Rating: byte (1..5)
         - Comment: string?
         - UserId: Guid
         - CourseId: Guid
-        + Update(rating: byte, comment: string?): Result
+        + {static} Create(userId, courseId, rating, comment): Result<Review>
+        + Update(rating, comment): Result
     }
 }
 
 package "Identity Aggregate" {
     class ApplicationUser <<Aggregate Root>> {
         - Id: Guid
+        - UserName: string
+        - Email: string
         - FullName: string?
         - ProfilePictureUrl: string?
     }
