@@ -17,11 +17,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Using Include="Xunit" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\src\SourceGuild.Domain\SourceGuild.Domain.csproj" />
+    <ProjectReference Include="..\..\src\SourceGuild.Application\SourceGuild.Application.csproj" />
   </ItemGroup>
 
 </Project>
